@@ -9,7 +9,7 @@ networks:
 
 services:
   proxy:
-    container_name: base.proxy.production
+    container_name: stats.proxy.production
     restart: always
     image: nginx:1.23.3-alpine
     ports:
@@ -27,7 +27,7 @@ services:
       - proxied
 
   client:
-    container_name: base.client.production
+    container_name: stats.client.production
     restart: always
     build:
       context: ./client/
@@ -37,7 +37,7 @@ services:
       - proxied
 
   server:
-    container_name: base.server.production
+    container_name: stats.server.production
     restart: always
     build:
       context: ./server/
