@@ -2,35 +2,22 @@
 #include <fstream>
 #include <string>
 #include <regex>
+#include "string_to_access_record.h"
+#include "read_lines_from_stream_from_end.h"
 using namespace std;
 
-regex default_log_line_expression()
+void print_access_record(string line)
 {
-  string ip = "(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|-)";
+  default_access_record record = string_to_access_record(line);
 
-  string date = "\\d{1,2}\\/\\w{3}\\/\\d{1,4}";
-  string time = "\\d{1,2}:\\d{1,2}:\\d{1,2}";
-  string timezone = "[\\+|-]\\d{4}";
-  string local_time = "\\[(" + date + ":" + time + " " + timezone + ")\\]";
-
-  string request_type = "\\w{3,7}";
-  string url = "\\/.*";
-  string http_version = "HTTP\\/[\\d\\.]+";
-  string request = "\"(" + request_type + " " + url + " " + http_version + ")\"";
-
-  string status = "(\\d{3})";
-
-  string bytes = "(\\d+)";
-
-  string referrer = "\"(.*)\"";
-
-  string user_agent = "\"(.*)\"";
-
-  stringstream log_line;
-  log_line << ip << " - " << ip << " " << local_time << " " << request << " " << status << " " << bytes << " " << referrer << " " << user_agent;
-
-  regex expression(log_line.str());
-  return expression;
+  cout << "Remote address:\t" << record.remote_address << "\n";
+  cout << "Remote user:\t" << record.remote_user << "\n";
+  cout << "Local time:\t" << record.local_time << "\n";
+  cout << "Request:\t" << record.request << "\n";
+  cout << "Status:\t\t" << record.status << "\n";
+  cout << "Bytes sent:\t" << record.bytes_sent << "\n";
+  cout << "Referrer:\t" << record.referrer << "\n";
+  cout << "User agent:\t" << record.user_agent << "\n";
 }
 
 int main()
@@ -41,25 +28,10 @@ int main()
 
   if (file.is_open())
   {
-    string line;
-    regex expression = default_log_line_expression();
-    smatch parts;
-
-    while (getline(file, line))
-    {
-      regex_search(line, parts, expression);
-
-      cout << line << "\n";
-      cout << "Remote address:\t" << parts[1] << "\n";
-      cout << "Remote user:\t" << parts[2] << "\n";
-      cout << "Local time:\t" << parts[3] << "\n";
-      cout << "Request:\t" << parts[4] << "\n";
-      cout << "Status:\t\t" << parts[5] << "\n";
-      cout << "Bytes sent:\t" << parts[6] << "\n";
-      cout << "Referrer:\t" << parts[7] << "\n";
-      cout << "User agent:\t" << parts[8] << "\n";
-    }
+    read_lines_from_stream_from_end(file, print_access_record);
 
     file.close();
   }
+
+  return EXIT_SUCCESS;
 }
