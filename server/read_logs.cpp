@@ -1,10 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <regex>
-#include "string_to_access_record.h"
-#include "read_lines_from_stream_from_end.h"
+#include <sqlite3.h>
 using namespace std;
+
+#include <read_logs/open_database.h>
+#include <read_logs/string_to_access_record.h>
+#include <read_logs/read_lines_from_stream_from_end.h>
 
 void print_access_record(string line)
 {
@@ -23,16 +25,27 @@ void print_access_record(string line)
 
 int main()
 {
+  sqlite3 *database;
   fstream file;
+
+  if (open_database("files/stats.db", &database))
+  {
+    cerr << "ERROR: Could not open database: " << sqlite3_errmsg(database) << "\n";
+    return EXIT_FAILURE;
+  }
 
   file.open("./../proxy/logs/access.log", ios::in);
 
   if (!file.is_open())
+  {
+    cerr << "ERROR: Could not open file.\n";
     return EXIT_FAILURE;
+  }
 
   read_lines_from_stream_from_end(file, print_access_record);
 
   file.close();
+  sqlite3_close(database);
 
   return EXIT_SUCCESS;
 }

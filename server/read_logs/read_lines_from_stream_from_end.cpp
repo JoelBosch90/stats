@@ -5,13 +5,13 @@ bool contains_only_whitespaces(string input)
   return input.find_first_not_of(" \t\n\v\f\r") == string::npos;
 }
 
-void process_line(string &line, function<void(string)> process)
+void process_line(string line, function<void(string)> process)
 {
-  if (!contains_only_whitespaces(line))
-  {
-    reverse(line.begin(), line.end());
-    process(line);
-  }
+  if (contains_only_whitespaces(line))
+    return;
+
+  reverse(line.begin(), line.end());
+  process(line);
 }
 
 void read_lines_from_stream_from_end(istream &input, function<void(string)> process)

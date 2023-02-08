@@ -1,4 +1,5 @@
 # base
+
 This is a simple base setup using Docker Compose to host an Nginx reverse proxy
 microservice, and both an 'api' and a 'client' directories with some placeholder
 files.
