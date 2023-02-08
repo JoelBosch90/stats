@@ -10,6 +10,7 @@ void print_access_record(string line)
 {
   default_access_record record = string_to_access_record(line);
 
+  cout << "\n";
   cout << "Remote address:\t" << record.remote_address << "\n";
   cout << "Remote user:\t" << record.remote_user << "\n";
   cout << "Local time:\t" << record.local_time << "\n";
@@ -26,12 +27,12 @@ int main()
 
   file.open("./../proxy/logs/access.log", ios::in);
 
-  if (file.is_open())
-  {
-    read_lines_from_stream_from_end(file, print_access_record);
+  if (!file.is_open())
+    return EXIT_FAILURE;
 
-    file.close();
-  }
+  read_lines_from_stream_from_end(file, print_access_record);
+
+  file.close();
 
   return EXIT_SUCCESS;
 }

@@ -5,6 +5,15 @@ bool contains_only_whitespaces(string input)
   return input.find_first_not_of(" \t\n\v\f\r") == string::npos;
 }
 
+void process_line(string &line, function<void(string)> process)
+{
+  if (!contains_only_whitespaces(line))
+  {
+    reverse(line.begin(), line.end());
+    process(line);
+  }
+}
+
 void read_lines_from_stream_from_end(istream &input, function<void(string)> process)
 {
   string line;
@@ -29,12 +38,7 @@ void read_lines_from_stream_from_end(istream &input, function<void(string)> proc
 
     if (next_char == '\n')
     {
-      if (!contains_only_whitespaces(line))
-      {
-        reverse(line.begin(), line.end());
-        process(line);
-      }
-
+      process_line(line, process);
       line.clear();
     }
     else
@@ -45,4 +49,6 @@ void read_lines_from_stream_from_end(istream &input, function<void(string)> proc
     // Move the position of the reader back one character.
     input.seekg(-1, ios::cur);
   }
+
+  process_line(line, process);
 }
