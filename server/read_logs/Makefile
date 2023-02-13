@@ -1,5 +1,5 @@
 # Name the executable.
-TARGET = read_logs
+TARGET = ../bin/read_logs
 
 # Compiler settings.
 COMPILER = g++
