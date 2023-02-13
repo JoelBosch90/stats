@@ -1,7 +1,7 @@
 #include "only_whitespaces/only_whitespaces.h"
 #include "read_lines.h"
 
-void process_line(string line, function<void(string)> process)
+void process_reversed_line(string line, function<void(string)> process)
 {
   if (only_whitespaces(line))
     return;
@@ -34,7 +34,7 @@ void read_lines(istream &input, function<void(string)> process)
 
     if (next_char == '\n')
     {
-      process_line(line, process);
+      process_reversed_line(line, process);
       line.clear();
     }
     else
@@ -46,5 +46,5 @@ void read_lines(istream &input, function<void(string)> process)
     input.seekg(-1, ios::cur);
   }
 
-  process_line(line, process);
+  process_reversed_line(line, process);
 }
