@@ -17,7 +17,7 @@ LIBRARIES = sqlite3
 # Find all (nested) subdirectories.
 SUBDIRECTORIES = $(shell find $(SOURCE_DIRECTORY) -type d)
 
-# List all of the files in the subdirectories.
+# List all of the C++ files in the subdirectories.
 SOURCE_FILES += $(foreach subdirectory,$(SUBDIRECTORIES),$(wildcard $(subdirectory)/*.cpp))
 
 # We assume that each C++ file is accompanied by a header file by the same name.

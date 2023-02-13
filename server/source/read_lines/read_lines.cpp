@@ -1,9 +1,9 @@
-#include "contains_only_whitespaces/contains_only_whitespaces.h"
+#include "only_whitespaces/only_whitespaces.h"
 #include "read_lines.h"
 
 void process_line(string line, function<void(string)> process)
 {
-  if (contains_only_whitespaces(line))
+  if (only_whitespaces(line))
     return;
 
   reverse(line.begin(), line.end());
