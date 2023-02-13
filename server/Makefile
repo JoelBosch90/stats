@@ -1,8 +1,11 @@
 # Name the executable.
 OUTPUT_FILENAME = read_logs
+
+# Name the directory for the output binary.
 OUTPUT_DIRECTORY = ./bin
-INCLUDES_DIRECTORY = ./includes
-TARGET = $(OUTPUT_DIRECTORY)/$(OUTPUT_FILENAME)
+
+# Name the directory where we can find the files to compile.
+SOURCE_DIRECTORY = ./source
 
 # Compiler settings.
 COMPILER = g++
@@ -12,7 +15,7 @@ COMPILER_FLAGS = -Wall -std=c++17
 LIBRARIES = sqlite3
 
 # Find all (nested) subdirectories.
-SUBDIRECTORIES = $(shell find $(INCLUDES_DIRECTORY) -type d)
+SUBDIRECTORIES = $(shell find $(SOURCE_DIRECTORY) -type d)
 
 # List all of the files in the subdirectories.
 SOURCE_FILES += $(foreach subdirectory,$(SUBDIRECTORIES),$(wildcard $(subdirectory)/*.cpp))
@@ -28,6 +31,9 @@ OBJECT_FILES = $(SOURCE_FILES:.cpp=.o)
 # flags.
 INCLUDE_FLAGS = $(foreach subdirectory,$(SUBDIRECTORIES),-I$(subdirectory))
 COMPILER_FLAGS += $(INCLUDE_FLAGS)
+
+# Create the target flag.
+TARGET = $(OUTPUT_DIRECTORY)/$(OUTPUT_FILENAME)
 
 # Create the target executable.
 $(TARGET): $(OBJECT_FILES)
