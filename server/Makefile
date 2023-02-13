@@ -9,7 +9,7 @@ SOURCE_DIRECTORY = ./source
 
 # Compiler settings.
 COMPILER = g++
-COMPILER_FLAGS = -Wall -std=c++17
+COMPILER_FLAGS = -Wall -Werror -std=c++17
 
 # Included external libraries that need to be included.
 LIBRARIES = sqlite3
