@@ -34,7 +34,7 @@ int main()
     return EXIT_FAILURE;
   }
 
-  file.open("./../../proxy/logs/access.log", ios::in);
+  file.open("../../proxy/logs/access.log", ios::in);
 
   if (!file.is_open())
   {

@@ -1,5 +1,8 @@
 # Name the executable.
-TARGET = ../bin/read_logs
+OUTPUT_FILENAME = read_logs
+OUTPUT_DIRECTORY = ./bin
+INCLUDES_DIRECTORY = ./includes
+TARGET = $(OUTPUT_DIRECTORY)/$(OUTPUT_FILENAME)
 
 # Compiler settings.
 COMPILER = g++
@@ -9,7 +12,7 @@ COMPILER_FLAGS = -Wall -std=c++17
 LIBRARIES = sqlite3
 
 # Find all (nested) subdirectories.
-SUBDIRECTORIES = $(shell find . -type d)
+SUBDIRECTORIES = $(shell find $(INCLUDES_DIRECTORY) -type d)
 
 # List all of the files in the subdirectories.
 SOURCE_FILES += $(foreach subdirectory,$(SUBDIRECTORIES),$(wildcard $(subdirectory)/*.cpp))
