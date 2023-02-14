@@ -5,21 +5,21 @@
 using namespace std;
 
 #include "open_database/open_database.h"
-#include "read_line/read_line.h"
+#include "read_access_record/read_access_record.h"
 #include "read_lines/read_lines.h"
 
 void print_access_record(string line)
 {
-  default_access_record record = read_line(line);
+  access_record record = read_access_record(line);
 
   cout << "\n";
   cout << "Remote address:\t" << record.remote_address << "\n";
   cout << "Remote user:\t" << record.remote_user << "\n";
-  cout << "Local time:\t" << record.local_time << "\n";
-  cout << "Request:\t" << record.request << "\n";
-  cout << "Status:\t\t" << record.status << "\n";
+  cout << "Local time:\t" << record.time.local_time << " " << record.time.timezone << "\n";
+  cout << "Request:\t" << record.request.method + " " + record.request.path + record.request.query + record.request.fragment + " " + record.request.version << "\n";
+  cout << "Status:\t\t" << record.http_status_code << "\n";
   cout << "Bytes sent:\t" << record.bytes_sent << "\n";
-  cout << "Referrer:\t" << record.referrer << "\n";
+  // cout << "Referrer:\t" << record.referrer << "\n";
   cout << "User agent:\t" << record.user_agent << "\n";
 }
 
