@@ -3,8 +3,7 @@
 
 #include <string>
 #include <functional>
-using namespace std;
 
-bool only_whitespaces(string input);
+bool only_whitespaces(std::string input);
 
 #endif

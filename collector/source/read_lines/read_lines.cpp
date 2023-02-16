@@ -1,5 +1,6 @@
 #include "only_whitespaces/only_whitespaces.h"
 #include "read_lines.h"
+using namespace std;
 
 void process_reversed_line(string line, function<void(string)> process)
 {

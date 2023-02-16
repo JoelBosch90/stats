@@ -1,4 +1,5 @@
 #include "pad_left.h"
+using namespace std;
 
 string pad_left(string unpadded, char padding, int target_length)
 {

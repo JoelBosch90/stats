@@ -1,4 +1,5 @@
 #include "only_whitespaces.h"
+using namespace std;
 
 bool only_whitespaces(string input)
 {

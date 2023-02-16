@@ -2,31 +2,36 @@
 #include <fstream>
 #include <string>
 #include <sqlite3.h>
-using namespace std;
 
 #include "open_database/open_database.h"
 #include "read_access_record/read_access_record.h"
 #include "read_lines/read_lines.h"
 
-void print_access_record(string line)
+void print_access_record(std::string line)
 {
   access_record record = read_access_record(line);
 
-  cout << "\n";
-  cout << "Remote address:\t" << record.remote_address << "\n";
-  cout << "Remote user:\t" << record.remote_user << "\n";
-  cout << "Local time:\t" << record.time.local_time << " " << record.time.timezone << "\n";
-  cout << "Request:\t" << record.request.method + " " + record.request.path + record.request.query + record.request.fragment + " " + record.request.version << "\n";
-  cout << "Status:\t\t" << record.http_status_code << "\n";
-  cout << "Bytes sent:\t" << record.bytes_sent << "\n";
-  // cout << "Referrer:\t" << record.referrer << "\n";
-  cout << "User agent:\t" << record.user_agent << "\n";
+  std::cout << "\n";
+  std::cout << line << "\n";
+  std::cout << "\n";
+  std::cout << "Remote address:\t\t" << record.remote_address << "\n";
+  std::cout << "Remote user:\t\t" << record.remote_user << "\n";
+  std::cout << "Local time:\t\t" << record.time.local_time << " " << record.time.timezone << "\n";
+  std::cout << "Request method:\t\t" << record.request.method << "\n";
+  std::cout << "Request path:\t\t" << record.request.path << "\n";
+  std::cout << "Request query:\t\t" << record.request.query << "\n";
+  std::cout << "Request fragment:\t" << record.request.fragment << "\n";
+  std::cout << "Request version:\t" << record.request.version << "\n";
+  std::cout << "Request status:\t\t" << record.http_status_code << "\n";
+  std::cout << "Bytes sent:\t\t" << record.bytes_sent << "\n";
+  std::cout << "Referrer:\t\t" << record.referrer << "\n";
+  std::cout << "User agent:\t\t" << record.user_agent << "\n";
 }
 
 int main()
 {
   sqlite3 *database;
-  fstream file;
+  std::fstream file;
 
   if (open_database("../data/stats.db", &database))
   {

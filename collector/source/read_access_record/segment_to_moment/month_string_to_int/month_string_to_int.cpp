@@ -1,4 +1,5 @@
 #include "month_string_to_int.h"
+using namespace std;
 
 int month_string_to_int(string month)
 {

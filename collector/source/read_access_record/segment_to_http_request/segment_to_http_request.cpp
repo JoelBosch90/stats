@@ -1,32 +1,23 @@
 #include "segment_to_http_request.h"
-#include <iostream>
+#include "../first_capture_group/first_capture_group.h"
+using namespace std;
 
+// Example segment: GET /home/page.html?question=answer&key=value#anchor HTTP/1.1
 http_request segment_to_http_request(string segment)
 {
-  string random = "GET /home/page.html?question=answer&key=value#anchor HTTP/1.1";
   http_request request;
-  smatch parts;
+  string method = "\\w{3,7}";
 
   // Example: GET
-  string method = "\\w{3,7}";
+  request.method = first_capture_group("^(" + method + ")", segment);
   // Example: /home/page.html
-  string path = "\\/\\S*";
+  request.path = first_capture_group("^" + method + " ([^\\s ?#]*)", segment);
   // Example: ?question=answer&key=value
-  string query = "\\?([^\\s#])";
+  request.query = first_capture_group("\\?([^\\s#]*)", segment);
   // Example: #anchor
-  string fragment = "#([^\\s])";
+  request.fragment = first_capture_group("#([^\\s?]*)", segment);
   // Example: HTTP/1.1
-  string http_version = "HTTP\\/[\\d\\.]+";
-
-  // Example: GET /home/page.html?question=answer&key=value#anchor HTTP/1.1
-  regex expression(method + " " + path + query + fragment + " " + http_version);
-  regex_search(random, parts, expression);
-
-  request.method = parts[1];
-  request.path = parts[2];
-  request.query = parts[3];
-  request.fragment = parts[4];
-  request.version = parts[5];
+  request.version = first_capture_group(" (HTTP\\/[\\d\\.]+)$", segment);
 
   return request;
 };

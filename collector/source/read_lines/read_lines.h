@@ -5,8 +5,7 @@
 #include <algorithm>
 #include <string>
 #include <functional>
-using namespace std;
 
-void read_lines(istream &input, function<void(string)> process);
+void read_lines(std::istream &input, std::function<void(std::string)> process);
 
 #endif
