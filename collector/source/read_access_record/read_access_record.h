@@ -5,18 +5,7 @@
 #include "segment_to_moment/segment_to_moment.h"
 #include "segment_to_http_request/segment_to_http_request.h"
 #include "segment_to_url/segment_to_url.h"
-
-// https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
-// struct user_agent
-// {
-//   string text;
-//   string browser_name;
-//   string browser_version;
-//   string rendering_engine_name;
-//   string rendering_engine_version;
-//   string operating_system;
-//   string device_type;
-// };
+#include "segment_to_agent/segment_to_agent.h"
 
 struct access_record
 {
@@ -28,7 +17,7 @@ struct access_record
   int http_status_code;
   int bytes_sent;
   url referrer;
-  std::string user_agent;
+  agent user_agent;
 };
 
 access_record read_access_record(std::string line);
