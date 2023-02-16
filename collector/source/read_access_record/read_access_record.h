@@ -4,13 +4,7 @@
 #include <string>
 #include "segment_to_moment/segment_to_moment.h"
 #include "segment_to_http_request/segment_to_http_request.h"
-
-struct referrer
-{
-  std::string protocol;
-  std::string domain;
-  std::string port;
-};
+#include "segment_to_url/segment_to_url.h"
 
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
 // struct user_agent
@@ -33,7 +27,7 @@ struct access_record
   http_request request;
   int http_status_code;
   int bytes_sent;
-  std::string referrer;
+  url referrer;
   std::string user_agent;
 };
 
