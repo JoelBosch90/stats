@@ -25,7 +25,9 @@ void print_access_record(std::string line)
   std::cout << "Request status:\t\t" << record.http_status_code << "\n";
   std::cout << "Bytes sent:\t\t" << record.bytes_sent << "\n";
   std::cout << "Referrer:\t\t" << record.referrer.protocol << "://" << record.referrer.authentication << record.referrer.domain << ":" << record.referrer.port << "\n";
-  std::cout << "User agent:\t\t" << record.user_agent << "\n";
+  std::cout << "Browser:\t\t" << record.user_agent.browser_name << "/" << record.user_agent.browser_version << "\n";
+  std::cout << "Rendering engine:\t" << record.user_agent.rendering_engine_name << "/" << record.user_agent.rendering_engine_version << "\n";
+  std::cout << "Operating system:\t" << record.user_agent.operating_system << "\n";
 }
 
 int main()

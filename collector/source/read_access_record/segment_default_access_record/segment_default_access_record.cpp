@@ -1,14 +1,10 @@
-#include <regex>
 #include "segment_default_access_record.h"
 #include "../first_capture_group/first_capture_group.h"
 using namespace std;
 
-// Example: 172.21.0.1 - - [22/Jan/2023:14:11:17 +0000] "GET /build/bundle.css HTTP/1.1" 304 0 "http://localhost:8009/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0"
 access_record_segments segment_default_access_record(string line)
 {
   access_record_segments segments;
-  stringstream access_record;
-  smatch parts;
 
   string ip = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|-";
   string http_request = "\\w{3,7} .*? HTTP/[\\d\\.]+";
@@ -16,6 +12,7 @@ access_record_segments segment_default_access_record(string line)
   string anything = ".*?";
   string anything_quoted = "\".*?\"";
 
+  // Example: 172.21.0.1 - - [22/Jan/2023:14:11:17 +0000] "GET /build/bundle.css HTTP/1.1" 304 0 "http://localhost:8009/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0"
   segments.full_text = line;
   // Example: 172.21.0.1 - -
   segments.remote_address = first_capture_group("(" + ip + ") - (?:" + ip + ")", line);

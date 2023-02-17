@@ -4,12 +4,12 @@ using namespace std;
 
 string first_capture_group(string pattern, string source)
 {
-  smatch parts;
+  smatch matches;
   regex expression(pattern);
-  bool found = regex_search(source, parts, expression);
+  bool found = regex_search(source, matches, expression);
 
-  if (found && parts.length() > 1)
-    return parts[1];
+  if (found && matches.length() > 1)
+    return matches[1];
 
   return "";
 };

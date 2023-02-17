@@ -12,7 +12,7 @@ struct agent
   std::string rendering_engine_name;
   std::string rendering_engine_version;
   std::string operating_system;
-  std::string device_type;
+  int mobile;
 };
 
 agent segment_to_agent(std::string segment);
