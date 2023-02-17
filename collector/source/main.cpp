@@ -27,7 +27,7 @@ void print_access_record(std::string line)
   std::cout << "Referrer:\t\t" << record.referrer.protocol << "://" << record.referrer.authentication << record.referrer.domain << ":" << record.referrer.port << "\n";
   std::cout << "Browser:\t\t" << record.user_agent.browser_name << "/" << record.user_agent.browser_version << "\n";
   std::cout << "Rendering engine:\t" << record.user_agent.rendering_engine_name << "/" << record.user_agent.rendering_engine_version << "\n";
-  std::cout << "Operating system:\t" << record.user_agent.operating_system << "\n";
+  std::cout << "Operating system:\t" << record.user_agent.operating_system << " on " + record.user_agent.device_type + "\n";
 }
 
 int main()

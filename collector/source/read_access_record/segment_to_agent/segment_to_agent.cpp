@@ -1,8 +1,8 @@
 #include "segment_to_agent.h"
-#include "../first_capture_group/first_capture_group.h"
 #include "find_browser/find_browser.h"
 #include "find_rendering_engine/find_rendering_engine.h"
 #include "find_operating_system/find_operating_system.h"
+#include "find_device_type/find_device_type.h"
 using namespace std;
 
 // Example: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0
@@ -18,7 +18,7 @@ agent segment_to_agent(string segment)
   user_agent.rendering_engine_name = user_rendering_engine.name;
   user_agent.rendering_engine_version = user_rendering_engine.version;
   user_agent.operating_system = find_operating_system(segment);
-  user_agent.mobile = 0;
+  user_agent.device_type = find_device_type(segment);
 
   return user_agent;
 };
