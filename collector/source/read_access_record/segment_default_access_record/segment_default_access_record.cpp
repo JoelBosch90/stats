@@ -16,6 +16,7 @@ access_record_segments segment_default_access_record(string line)
   string anything = ".*?";
   string anything_quoted = "\".*?\"";
 
+  segments.full_text = line;
   // Example: 172.21.0.1 - -
   segments.remote_address = first_capture_group("(" + ip + ") - (?:" + ip + ")", line);
   // Example: - - 172.21.0.1

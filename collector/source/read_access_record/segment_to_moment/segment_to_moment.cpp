@@ -45,6 +45,7 @@ moment segment_to_moment(string segment)
   string timestamp_seconds = pad_left(seconds, padding, 2);
   string timestamp = timestamp_hours + ":" + timestamp_minutes + ":" + timestamp_seconds;
 
+  moment.full_text = segment;
   moment.local_time = date + " " + timestamp;
   moment.timezone = timezone;
 

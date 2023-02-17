@@ -5,6 +5,7 @@
 
 struct url
 {
+  std::string full_text;
   std::string protocol;
   std::string authentication;
   std::string domain;

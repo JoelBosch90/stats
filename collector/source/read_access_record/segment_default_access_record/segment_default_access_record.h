@@ -5,6 +5,7 @@
 
 struct access_record_segments
 {
+  std::string full_text;
   std::string remote_address;
   std::string remote_user;
   std::string local_time;

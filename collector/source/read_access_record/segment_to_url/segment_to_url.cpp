@@ -7,6 +7,7 @@ url segment_to_url(string segment)
 {
   url link;
 
+  link.full_text = segment;
   link.protocol = first_capture_group("^(.*?)://", segment);
   string authentication_plus_domain = first_capture_group("://([^\\s#?/@]+@[^\\s#?/:@]+|[^\\s#?/:@]+)", segment);
   link.authentication = first_capture_group("(.*?)@", authentication_plus_domain);

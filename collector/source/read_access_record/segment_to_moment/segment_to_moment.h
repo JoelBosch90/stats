@@ -5,6 +5,7 @@
 
 struct moment
 {
+  std::string full_text;
   std::string local_time;
   std::string timezone;
 };

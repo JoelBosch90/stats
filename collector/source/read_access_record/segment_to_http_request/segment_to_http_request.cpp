@@ -8,6 +8,7 @@ http_request segment_to_http_request(string segment)
   http_request request;
   string method = "\\w{3,7}";
 
+  request.full_text = segment;
   // Example: GET
   request.method = first_capture_group("^(" + method + ")", segment);
   // Example: /home/page.html

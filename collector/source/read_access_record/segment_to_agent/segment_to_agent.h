@@ -6,7 +6,7 @@
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
 struct agent
 {
-  std::string text;
+  std::string full_text;
   std::string browser_name;
   std::string browser_version;
   std::string rendering_engine_name;
@@ -15,6 +15,6 @@ struct agent
   std::string device_type;
 };
 
-agent segment_to_agent(std::string line);
+agent segment_to_agent(std::string segment);
 
 #endif

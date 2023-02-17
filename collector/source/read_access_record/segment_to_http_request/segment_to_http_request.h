@@ -5,6 +5,7 @@
 
 struct http_request
 {
+  std::string full_text;
   std::string method;
   std::string path;
   std::string query;
