@@ -3,7 +3,7 @@
 #include <string>
 #include <sqlite3.h>
 
-#include "open_database/open_database.h"
+#include "database_open/database_open.h"
 #include "read_access_record/read_access_record.h"
 #include "read_lines/read_lines.h"
 
@@ -36,7 +36,7 @@ int main()
   std::string database_path = "../data/stats.db";
   std::string log_path = "../../proxy/logs/access.log";
 
-  if (open_database(database_path, database))
+  if (database_open(database_path, database))
   {
     cerr << "ERROR: Could not open database: " << sqlite3_errmsg(database) << "\n";
     return EXIT_FAILURE;
