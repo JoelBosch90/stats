@@ -1,9 +1,9 @@
 #!/bin/bash
 ################################################################################
 #
-#   Base setup
+#   Stats setup
 #
-#       This bash file processes some basic actions for the base setup project.
+#       This bash file processes some basic actions for the stats setup project.
 #       It currently supports the following commands:
 #
 #           update        Updates the local repository to the latest version.
@@ -22,11 +22,11 @@
 #       For example, to update the local repository and then run a local
 #       development environment, you can run the following:
 #
-#           base update dev
+#           stats update dev
 #
 #       Some command require an extra argument. You can call these like this:
 #
-#           base commit "Commit message"
+#           stats commit "Commit message"
 #
 #   Requirements
 #
@@ -40,12 +40,12 @@
 #           Add a shortcut so that you can execute this file from anywhere and
 #           no longer need to write the extension:
 #
-#               sudo ln -s /path/to/project/shortcuts.sh /usr/bin/base
+#               sudo ln -s /path/to/project/shortcuts.sh /usr/bin/stats
 #
 ################################################################################
 
 # Get access to the project's working directory.
-WORKDIR="$(dirname "$(readlink -f "$0")")"
+WORKDIR="$(dirname "$(readlink -f "$0")")";
 
 ################################################################################
 #
@@ -75,10 +75,10 @@ runDevelopment () {
 
   # Make sure we can run Docker. This config file is not needed and on Windows
   # it can cause some odd bugs causing Docker to fail.
-  rm -f ~/.docker/config.json
+  rm -f ~/.docker/config.json;
 
   # Spin up the Docker Compose network with the development settings.
-  docker-compose -f docker-compose.dev.yml up $1
+  docker-compose -f docker-compose.dev.yml up $1;
 }
 
 ################################################################################
@@ -90,14 +90,14 @@ runDevelopment () {
 runProduction () {
 
   # First update the current project so that we'll have the latest version.
-  updateProject
+  updateProject;
 
   # Make sure we can run Docker. This config file is not needed and on Windows
   # it can cause some odd bugs causing Docker to fail.
-  rm -f ~/.docker/config.json
+  rm -f ~/.docker/config.json;
 
   # Spin up the Docker Compose network with the production settings.
-  docker-compose up $1
+  docker-compose up $1;
 }
 
 ################################################################################
@@ -114,16 +114,16 @@ release () {
   cd $WORKDIR;
 
   # Visit the production branch.
-  git checkout production
+  git checkout production;
 
   # Merge the developmental changes to the production branch.
-  git merge development
+  git merge development;
 
   # Push the new changes to the production branch.
-  git push
+  git push;
 
   # Go back to the previous branch.
-  git checkout -
+  git checkout -;
 }
 
 ################################################################################
@@ -139,13 +139,34 @@ commit () {
   cd $WORKDIR;
 
   # Add all changes to this commit.
-  git add .
+  git add .;
 
   # Commit the changes with the provided message.
-  git commit -m "$1"
+  git commit -m "$1";
 
   # Push the new changes to the currently selected branch.
-  git push
+  git push;
+}
+
+################################################################################
+#
+#   collect
+#       Function to make and run the collector service manually.
+#
+################################################################################
+collect () {
+
+  # Visit the collector directory.
+  cd $WORKDIR/collector;
+
+  # Make the collector binaries.
+  make;
+
+  # Visible the binaries directory.
+  cd bin;
+
+  # Run the collector script.
+  ./read_logs;
 }
 
 # Loop through the command line arguments.
@@ -158,7 +179,7 @@ while [[ $# -gt 0 ]]; do
   # Determine per command what to do.
   case "$command" in
 
-    # Run `base commit "Commit message"` to commit and push all recent
+    # Run `stats commit "Commit message"` to commit and push all recent
     # changes to the current branch.
     c|commit)
       commit "$argument"
@@ -166,30 +187,36 @@ while [[ $# -gt 0 ]]; do
       shift # Skip once extra because we used an extra argument for this.
       ;;
 
-    # Run `base update` to update the local repository.
+    # Run `stats update` to update the local repository.
     u|up|update)
       updateProject
       shift # Get ready to process the next command.
       ;;
 
-    # Run `base release` to release the current version of the
+    # Run `stats release` to release the current version of the
     # development branch and roll those changes out to the live version.
     r|release)
       release
       shift # Get ready to process the next command.
       ;;
 
-    # Run `base development` to run a local development instance of the
-    # base setup application.
+    # Run `stats development` to run a local development instance of the
+    # stats setup application.
     d|dev|development)
       runDevelopment "$argument"
       shift # Get ready to process the next command.
       ;;
 
-    # Run `base production` to run a local example of the production release
-    # of the base setup application.
+    # Run `stats production` to run a local example of the production release
+    # of the stats setup application.
     p|prod|production)
       runProduction "$argument"
+      shift # Get ready to process the next command.
+      ;;
+
+    # Run `stats collect` to make and run the collect service locally.
+    collect)
+      collect
       shift # Get ready to process the next command.
       ;;
   esac

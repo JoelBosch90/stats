@@ -5,6 +5,6 @@
 #include <string>
 using namespace std;
 
-int open_database(string name, sqlite3 **database);
+int open_database(string name, sqlite3 *database);
 
 #endif

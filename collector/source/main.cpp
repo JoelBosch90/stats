@@ -13,7 +13,6 @@ void print_access_record(std::string line)
 
   std::cout << "\n";
   std::cout << line << "\n";
-  std::cout << "\n";
   std::cout << "Remote address:\t\t" << record.remote_address << "\n";
   std::cout << "Remote user:\t\t" << record.remote_user << "\n";
   std::cout << "Local time:\t\t" << record.time.local_time << " " << record.time.timezone << "\n";
@@ -34,14 +33,16 @@ int main()
 {
   sqlite3 *database;
   std::fstream file;
+  std::string database_path = "../data/stats.db";
+  std::string log_path = "../../proxy/logs/access.log";
 
-  if (open_database("../data/stats.db", &database))
+  if (open_database(database_path, database))
   {
     cerr << "ERROR: Could not open database: " << sqlite3_errmsg(database) << "\n";
     return EXIT_FAILURE;
   }
 
-  file.open("../../proxy/logs/access.log", ios::in);
+  file.open(log_path, ios::in);
 
   if (!file.is_open())
   {

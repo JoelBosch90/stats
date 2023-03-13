@@ -9,8 +9,8 @@
 
 struct access_record
 {
-  std::string full_text;
   int id;
+  std::string full_text;
   std::string remote_address;
   std::string remote_user;
   moment time;
