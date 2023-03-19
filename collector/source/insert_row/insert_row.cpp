@@ -20,17 +20,18 @@ int insert_row(string table, vector<string> columns, vector<string> values, sqli
 {
   sqlite3_stmt *statement;
   string query = create_empty_row_query(table, columns);
+  int exit_code = EXIT_SUCCESS;
 
   if (sqlite3_prepare_v2(database, query.c_str(), -1, &statement, nullptr) != SQLITE_OK)
-    return EXIT_FAILURE;
+    exit_code = EXIT_FAILURE;
 
   for (int index = 0; index < values.size(); ++index)
     sqlite3_bind_text(statement, index + 1, values[index].c_str(), -1, SQLITE_TRANSIENT);
 
   if (sqlite3_step(statement) != SQLITE_DONE)
-    return EXIT_FAILURE;
+    exit_code = EXIT_FAILURE;
 
   sqlite3_finalize(statement);
 
-  return EXIT_SUCCESS;
+  return exit_code;
 };

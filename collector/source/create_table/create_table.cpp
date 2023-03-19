@@ -2,8 +2,6 @@
 #include "../join_strings/join_strings.h"
 using namespace std;
 
-#include <iostream>
-
 string create_table_query(string name, vector<string> *rows)
 {
   string query;
@@ -19,14 +17,15 @@ int create_table(string name, vector<string> *rows, sqlite3 *database)
 {
   sqlite3_stmt *statement;
   string query = create_table_query(name, rows);
+  int exit_code = EXIT_SUCCESS;
 
   if (sqlite3_prepare_v2(database, query.c_str(), -1, &statement, nullptr) != SQLITE_OK)
-    return EXIT_FAILURE;
+    exit_code = EXIT_FAILURE;
 
   if (sqlite3_step(statement) != SQLITE_OK)
-    return EXIT_FAILURE;
+    exit_code = EXIT_FAILURE;
 
   sqlite3_finalize(statement);
 
-  return EXIT_SUCCESS;
+  return exit_code;
 };

@@ -1,75 +1,30 @@
 #include "store_record.h"
-#include "../insert_row/insert_row.h"
+#include "../read_access_record/read_access_record.h"
+#include "insert_record/insert_record.h"
+#include "record_in_list/record_in_list.h"
 #include <vector>
 using namespace std;
 
-int store_record(access_record record, sqlite3 *database)
+#include <iostream>
+
+int store_record(string line, vector<string> latest_record_strings, sqlite3 *database)
 {
-  vector<string> columns{
-      "FULL_RECORD",
+  access_record record = read_access_record(line);
+  vector<access_record> latest_records;
 
-      "REMOTE_ADDRESS",
-      "REMOTE_USER",
+  for (string record_string : latest_record_strings)
+    latest_records.push_back(read_access_record(record_string));
 
-      "LOCAL_TIME",
-      "TIMEZONE",
+  string latest_time = latest_records.size() > 0 ? latest_records[0].time.local_time : "1970-01-0 00:00:00";
 
-      "HTTP_REQUEST_METHOD",
-      "HTTP_REQUEST_PATH",
-      "HTTP_REQUEST_QUERY",
-      "HTTP_REQUEST_FRAGMENT",
-      "HTTP_REQUEST_VERSION",
+  if (latest_records.size() == 0)
+    return insert_record(record, database);
 
-      "HTTP_STATUS_CODE",
+  if (record.time.local_time < latest_time)
+    return EXIT_SUCCESS;
 
-      "BYTES_SENT",
+  if (record.time.local_time == latest_time && (record_in_list(record, latest_records)))
+    return EXIT_SUCCESS;
 
-      "REFERRER_PROTOCOL",
-      "REFERRER_AUTHENTICATION",
-      "REFERRER_DOMAIN",
-      "REFERRER_PORT",
-      "REFERRER_QUERY",
-      "REFERRER_FRAGMENT",
-
-      "BROWSER_NAME",
-      "BROWSER_VERSION",
-      "RENDERING_ENGINE_NAME",
-      "RENDERING_ENGINE_VERSION",
-      "OPERATING_SYSTEM",
-      "DEVICE_TYPE"};
-
-  vector<string> values{
-      record.full_text,
-
-      record.remote_address,
-      record.remote_user,
-
-      record.time.local_time,
-      record.time.timezone,
-
-      record.request.method,
-      record.request.path,
-      record.request.query,
-      record.request.fragment,
-      record.request.version,
-
-      to_string(record.http_status_code),
-
-      to_string(record.bytes_sent),
-
-      record.referrer.protocol,
-      record.referrer.authentication,
-      record.referrer.domain,
-      record.referrer.port,
-      record.referrer.query,
-      record.referrer.fragment,
-
-      record.user_agent.browser_name,
-      record.user_agent.browser_version,
-      record.user_agent.rendering_engine_name,
-      record.user_agent.rendering_engine_version,
-      record.user_agent.operating_system,
-      record.user_agent.device_type};
-
-  return insert_row("ACCESS_RECORDS", columns, values, database);
+  return insert_record(record, database);
 };

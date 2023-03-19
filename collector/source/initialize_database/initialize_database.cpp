@@ -5,6 +5,7 @@ using namespace std;
 int initialize_database(sqlite3 *database)
 {
   vector<string> access_records{
+      "ID INTEGER PRIMARY KEY",
       "FULL_RECORD TEXT",
 
       "REMOTE_ADDRESS TEXT",
