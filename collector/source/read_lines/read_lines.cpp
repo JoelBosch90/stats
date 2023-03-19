@@ -1,17 +1,18 @@
 #include "only_whitespaces/only_whitespaces.h"
 #include "read_lines.h"
+#include <algorithm>
 using namespace std;
 
-void process_reversed_line(string line, function<void(string)> process)
+int process_reversed_line(string line, function<int(string, sqlite3 *)> process, sqlite3 *database)
 {
   if (only_whitespaces(line))
-    return;
+    return EXIT_SUCCESS;
 
   reverse(line.begin(), line.end());
-  process(line);
+  return process(line, database);
 }
 
-void read_lines(istream &input, function<void(string)> process)
+int read_lines(istream &input, function<int(string, sqlite3 *)> process, sqlite3 *database)
 {
   string line;
   char next_char;
@@ -35,7 +36,9 @@ void read_lines(istream &input, function<void(string)> process)
 
     if (next_char == '\n')
     {
-      process_reversed_line(line, process);
+      if (process_reversed_line(line, process, database) != EXIT_SUCCESS)
+        return EXIT_FAILURE;
+
       line.clear();
     }
     else
@@ -47,5 +50,5 @@ void read_lines(istream &input, function<void(string)> process)
     input.seekg(-1, ios::cur);
   }
 
-  process_reversed_line(line, process);
+  return process_reversed_line(line, process, database);
 }

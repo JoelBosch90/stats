@@ -2,10 +2,10 @@
 #define READ_LINES_H
 
 #include <istream>
-#include <algorithm>
-#include <string>
 #include <functional>
+#include <string>
+#include <sqlite3.h>
 
-void read_lines(std::istream &input, std::function<void(std::string)> process);
+int read_lines(std::istream &input, std::function<int(std::string, sqlite3 *)> process, sqlite3 *database);
 
 #endif

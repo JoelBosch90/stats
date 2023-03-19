@@ -1,14 +1,10 @@
-#include "database_open.h"
-#include "create_table/create_table.h"
+#include "initialize_database.h"
+#include "../create_table/create_table.h"
+using namespace std;
 
-int database_open(string name, sqlite3 *database)
+int initialize_database(sqlite3 *database)
 {
-  if (sqlite3_open(name.c_str(), &database))
-    return EXIT_FAILURE;
-
   vector<string> access_records{
-      "ID INT PRIMARY KEY NOT NULL",
-
       "FULL_RECORD TEXT",
 
       "REMOTE_ADDRESS TEXT",
@@ -23,9 +19,9 @@ int database_open(string name, sqlite3 *database)
       "HTTP_REQUEST_FRAGMENT TEXT",
       "HTTP_REQUEST_VERSION TEXT",
 
-      "HTTP_STATUS_CODE INT",
+      "HTTP_STATUS_CODE TEXT",
 
-      "BYTES_SENT INT",
+      "BYTES_SENT TEXT",
 
       "REFERRER_PROTOCOL TEXT",
       "REFERRER_AUTHENTICATION TEXT",
@@ -40,6 +36,7 @@ int database_open(string name, sqlite3 *database)
       "RENDERING_ENGINE_VERSION TEXT",
       "OPERATING_SYSTEM TEXT",
       "DEVICE_TYPE TEXT"};
+
   create_table("ACCESS_RECORDS", &access_records, database);
 
   return EXIT_SUCCESS;

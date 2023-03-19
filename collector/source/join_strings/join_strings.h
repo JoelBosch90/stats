@@ -3,8 +3,7 @@
 
 #include <string>
 #include <vector>
-using namespace std;
 
-string join_strings(vector<string> *strings, string delimiter);
+std::string join_strings(std::vector<std::string> strings, std::string delimiter);
 
 #endif

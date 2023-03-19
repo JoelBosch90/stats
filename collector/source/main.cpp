@@ -2,31 +2,35 @@
 #include <fstream>
 #include <string>
 #include <sqlite3.h>
-
-#include "database_open/database_open.h"
+#include "initialize_database/initialize_database.h"
 #include "read_access_record/read_access_record.h"
 #include "read_lines/read_lines.h"
+#include "store_record/store_record.h"
 
-void print_access_record(std::string line)
+int store_access_record(std::string line, sqlite3 *database)
 {
-  access_record record = read_access_record(line);
+  if (database == nullptr)
+    std::cout << "null in store_access_record";
 
-  std::cout << "\n";
-  std::cout << line << "\n";
-  std::cout << "Remote address:\t\t" << record.remote_address << "\n";
-  std::cout << "Remote user:\t\t" << record.remote_user << "\n";
-  std::cout << "Local time:\t\t" << record.time.local_time << " " << record.time.timezone << "\n";
-  std::cout << "Request method:\t\t" << record.request.method << "\n";
-  std::cout << "Request path:\t\t" << record.request.path << "\n";
-  std::cout << "Request query:\t\t" << record.request.query << "\n";
-  std::cout << "Request fragment:\t" << record.request.fragment << "\n";
-  std::cout << "Request version:\t" << record.request.version << "\n";
-  std::cout << "Request status:\t\t" << record.http_status_code << "\n";
-  std::cout << "Bytes sent:\t\t" << record.bytes_sent << "\n";
-  std::cout << "Referrer:\t\t" << record.referrer.protocol << "://" << record.referrer.authentication << record.referrer.domain << ":" << record.referrer.port << "\n";
-  std::cout << "Browser:\t\t" << record.user_agent.browser_name << "/" << record.user_agent.browser_version << "\n";
-  std::cout << "Rendering engine:\t" << record.user_agent.rendering_engine_name << "/" << record.user_agent.rendering_engine_version << "\n";
-  std::cout << "Operating system:\t" << record.user_agent.operating_system << " on " + record.user_agent.device_type + "\n";
+  return store_record(read_access_record(line), database);
+
+  // access_record record = read_access_record(line);
+  // std::cout << std::endl;
+  // std::cout << line << std::endl;
+  // std::cout << "Remote address:\t\t" << record.remote_address << std::endl;
+  // std::cout << "Remote user:\t\t" << record.remote_user << std::endl;
+  // std::cout << "Local time:\t\t" << record.time.local_time << " " << record.time.timezone << std::endl;
+  // std::cout << "Request method:\t\t" << record.request.method << std::endl;
+  // std::cout << "Request path:\t\t" << record.request.path << std::endl;
+  // std::cout << "Request query:\t\t" << record.request.query << std::endl;
+  // std::cout << "Request fragment:\t" << record.request.fragment << std::endl;
+  // std::cout << "Request version:\t" << record.request.version << std::endl;
+  // std::cout << "Request status:\t\t" << record.http_status_code << std::endl;
+  // std::cout << "Bytes sent:\t\t" << record.bytes_sent << std::endl;
+  // std::cout << "Referrer:\t\t" << record.referrer.protocol << "://" << record.referrer.authentication << record.referrer.domain << ":" << record.referrer.port << std::endl;
+  // std::cout << "Browser:\t\t" << record.user_agent.browser_name << "/" << record.user_agent.browser_version << std::endl;
+  // std::cout << "Rendering engine:\t" << record.user_agent.rendering_engine_name << "/" << record.user_agent.rendering_engine_version << std::endl;
+  // std::cout << "Operating system:\t" << record.user_agent.operating_system << " on " + record.user_agent.device_type + std::endl;
 }
 
 int main()
@@ -36,21 +40,30 @@ int main()
   std::string database_path = "../data/stats.db";
   std::string log_path = "../../proxy/logs/access.log";
 
-  if (database_open(database_path, database))
+  if (sqlite3_open_v2(database_path.c_str(), &database, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr))
   {
-    cerr << "ERROR: Could not open database: " << sqlite3_errmsg(database) << "\n";
+    std::cerr << "ERROR: Could not open database: " << sqlite3_errmsg(database) << std::endl;
     return EXIT_FAILURE;
   }
 
-  file.open(log_path, ios::in);
+  if (initialize_database(database))
+  {
+    std::cerr << "ERROR: Could not initialize database: " << sqlite3_errmsg(database) << std::endl;
+    return EXIT_FAILURE;
+  }
 
+  file.open(log_path, std::ios::in);
   if (!file.is_open())
   {
-    cerr << "ERROR: Could not open file.\n";
+    std::cerr << "ERROR: Could not open file: " << log_path << std::endl;
     return EXIT_FAILURE;
   }
 
-  read_lines(file, print_access_record);
+  if (read_lines(file, store_access_record, database) != EXIT_SUCCESS)
+  {
+    std::cerr << "ERROR: Error writing to database: " << sqlite3_errmsg(database) << std::endl;
+    return EXIT_FAILURE;
+  };
 
   file.close();
   sqlite3_close(database);
