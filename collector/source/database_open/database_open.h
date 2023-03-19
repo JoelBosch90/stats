@@ -3,6 +3,7 @@
 
 #include <sqlite3.h>
 #include <string>
+#include <vector>
 using namespace std;
 
 int database_open(string name, sqlite3 *database);

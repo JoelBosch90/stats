@@ -6,7 +6,7 @@ int database_open(string name, sqlite3 *database)
   if (sqlite3_open(name.c_str(), &database))
     return EXIT_FAILURE;
 
-  string access_records_query[] = {
+  vector<string> access_records{
       "ID INT PRIMARY KEY NOT NULL",
 
       "FULL_RECORD TEXT",
@@ -40,7 +40,7 @@ int database_open(string name, sqlite3 *database)
       "RENDERING_ENGINE_VERSION TEXT",
       "OPERATING_SYSTEM TEXT",
       "DEVICE_TYPE TEXT"};
-  create_table("ACCESS_RECORDS", access_records_query, database);
+  create_table("ACCESS_RECORDS", &access_records, database);
 
   return EXIT_SUCCESS;
 }
