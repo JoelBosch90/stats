@@ -5,6 +5,8 @@
 #include <vector>
 using namespace std;
 
+extern const int EARLY_RETURN;
+
 int store_record(string line, vector<string> latest_record_strings, sqlite3 *database)
 {
   access_record record = read_access_record(line);
@@ -19,10 +21,10 @@ int store_record(string line, vector<string> latest_record_strings, sqlite3 *dat
     return insert_record(record, database);
 
   if (record.time.local_time < latest_time)
-    return EXIT_SUCCESS;
+    return EARLY_RETURN;
 
   if (record.time.local_time == latest_time && (record_in_list(record, latest_records)))
-    return EXIT_SUCCESS;
+    return EARLY_RETURN;
 
   return insert_record(record, database);
 };

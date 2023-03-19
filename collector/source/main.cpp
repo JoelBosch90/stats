@@ -7,6 +7,8 @@
 #include "read_lines/read_lines.h"
 #include "store_record/store_record.h"
 
+extern int EARLY_RETURN = -1;
+
 int main()
 {
   sqlite3 *database;

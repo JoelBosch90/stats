@@ -3,6 +3,8 @@
 #include "get_last_record_string/get_last_record_string.h"
 using namespace std;
 
+extern const int EARLY_RETURN;
+
 int read_lines(istream &input, function<int(string, vector<string>, sqlite3 *)> process, sqlite3 *database)
 {
   string line;
@@ -28,7 +30,12 @@ int read_lines(istream &input, function<int(string, vector<string>, sqlite3 *)> 
 
     if (next_char == '\n')
     {
-      if (process_reversed_line(process, line, last_record_string, database) != EXIT_SUCCESS)
+      int exit_code = process_reversed_line(process, line, last_record_string, database);
+
+      if (exit_code == EARLY_RETURN)
+        return EXIT_SUCCESS;
+
+      if (exit_code != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
       line.clear();
