@@ -7,16 +7,16 @@
 #include "read_lines/read_lines.h"
 #include "store_record/store_record.h"
 
-extern int EARLY_RETURN = -1;
+extern const int EARLY_RETURN = -1;
 
 int main()
 {
   sqlite3 *database;
   std::fstream file;
-  std::string database_path = "../data/stats.db";
-  std::string log_path = "../../proxy/logs/access.log";
+  std::string DATABASE_PATH = "../data/stats.db";
+  std::string LOGFILE_PATH = "../../proxy/logs/access.log";
 
-  if (sqlite3_open_v2(database_path.c_str(), &database, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr))
+  if (sqlite3_open_v2(DATABASE_PATH.c_str(), &database, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr))
   {
     std::cerr << "ERROR: Could not open database: " << sqlite3_errmsg(database) << std::endl;
     return EXIT_FAILURE;
@@ -28,10 +28,10 @@ int main()
     return EXIT_FAILURE;
   }
 
-  file.open(log_path, std::ios::in);
+  file.open(LOGFILE_PATH, std::ios::in);
   if (!file.is_open())
   {
-    std::cerr << "ERROR: Could not open file: " << log_path << std::endl;
+    std::cerr << "ERROR: Could not open file: " << LOGFILE_PATH << std::endl;
     return EXIT_FAILURE;
   }
 
