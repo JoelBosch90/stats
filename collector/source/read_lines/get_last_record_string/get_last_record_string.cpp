@@ -9,7 +9,7 @@ vector<string> get_last_record_string(sqlite3 *database)
 
   sqlite3_prepare_v2(database, query.c_str(), -1, &statement, nullptr);
 
-  if (sqlite3_step(statement) == SQLITE_ROW)
+  while (sqlite3_step(statement) == SQLITE_ROW)
     result.push_back(reinterpret_cast<const char *>(sqlite3_column_text(statement, 0)));
 
   sqlite3_finalize(statement);

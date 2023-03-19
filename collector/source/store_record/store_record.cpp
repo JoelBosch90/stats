@@ -5,8 +5,6 @@
 #include <vector>
 using namespace std;
 
-#include <iostream>
-
 int store_record(string line, vector<string> latest_record_strings, sqlite3 *database)
 {
   access_record record = read_access_record(line);
