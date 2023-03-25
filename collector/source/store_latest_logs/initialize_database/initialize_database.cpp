@@ -37,8 +37,13 @@ int initialize_database(sqlite3 *database)
       "RENDERING_ENGINE_VERSION TEXT",
       "OPERATING_SYSTEM TEXT",
       "DEVICE_TYPE TEXT"};
-
   create_table("ACCESS_RECORDS", &access_records, database);
+
+  vector<string> salts{
+      "ID INTEGER PRIMARY KEY",
+      "SALT TEXT",
+      "CREATED_AT TEXT"};
+  create_table("SALTS", &salts, database);
 
   return EXIT_SUCCESS;
 }

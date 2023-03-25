@@ -2,6 +2,7 @@
 #include "../read_access_record/read_access_record.h"
 #include "insert_record/insert_record.h"
 #include "record_in_list/record_in_list.h"
+#include "../get_daily_salt/get_daily_salt.h"
 #include <vector>
 using namespace std;
 
@@ -9,11 +10,12 @@ extern const int EARLY_RETURN;
 
 int store_record(string line, vector<string> latest_record_strings, sqlite3 *database)
 {
-  access_record record = read_access_record(line);
+  string salt = get_daily_salt(database);
+  access_record record = read_access_record(line, salt);
   vector<access_record> latest_records;
 
   for (string record_string : latest_record_strings)
-    latest_records.push_back(read_access_record(record_string));
+    latest_records.push_back(read_access_record(record_string, salt));
 
   string latest_time = latest_records.size() > 0 ? latest_records[0].time.local_time : "1970-01-0 00:00:00";
 

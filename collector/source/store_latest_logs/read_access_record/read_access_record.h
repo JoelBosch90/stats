@@ -21,6 +21,6 @@ struct access_record
   agent user_agent;
 };
 
-access_record read_access_record(std::string line);
+access_record read_access_record(std::string line, std::string salt);
 
 #endif

@@ -1,15 +1,15 @@
 #include "read_access_record.h"
 #include "segment_default_access_record/segment_default_access_record.h"
-using namespace std;
+#include "../hash/hash.h"
 
-access_record read_access_record(string line)
+access_record read_access_record(std::string line, std::string salt)
 {
   access_record record;
   access_record_segments segments = segment_default_access_record(line);
 
   record.full_text = line;
-  record.remote_address = segments.remote_address;
-  record.remote_user = segments.remote_user;
+  record.remote_address = hash(segments.remote_address, salt);
+  record.remote_user = hash(segments.remote_user, salt);
   record.time = segment_to_moment(segments.local_time);
   record.request = segment_to_http_request(segments.http_request);
   record.http_status_code = segments.http_status_code.length() > 0 ? stoi(segments.http_status_code) : 0;

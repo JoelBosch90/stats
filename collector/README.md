@@ -3,6 +3,8 @@
 ```
 sudo apt install sqlite3
 sudo apt-get install libsqlite3-dev
+sudo apt-get install libssl-dev
+sudo apt install libsodium-dev
 ```
 
 # Handy commands

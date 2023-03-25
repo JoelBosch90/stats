@@ -12,7 +12,7 @@ COMPILER = g++
 COMPILER_FLAGS = -Wall -Werror -std=c++17
 
 # Included external libraries that need to be included.
-LIBRARIES = sqlite3
+LIBRARIES = sqlite3 ssl crypto sodium
 
 # Find all (nested) subdirectories.
 SUBDIRECTORIES = $(shell find $(SOURCE_DIRECTORY) -type d)
@@ -37,7 +37,7 @@ TARGET = $(OUTPUT_DIRECTORY)/$(OUTPUT_FILENAME)
 
 # Create the target executable.
 $(TARGET): $(OBJECT_FILES)
-	$(COMPILER) $(COMPILER_FLAGS) $(OBJECT_FILES) -o $@ -l $(LIBRARIES)
+	$(COMPILER) $(COMPILER_FLAGS) $(OBJECT_FILES) -o $@ $(foreach library, $(LIBRARIES), -l$(library))
 
 # Compile all dependencies.
 %.o: %.cpp $(HEADER_FILES)
