@@ -1,8 +1,8 @@
 # Name the executable.
-OUTPUT_FILENAME = read_logs
+OUTPUT_FILENAME = logs_collector
 
 # Name the directory for the output binary.
-OUTPUT_DIRECTORY = ./bin
+OUTPUT_DIRECTORY = ./binary
 
 # Name the directory where we can find the files to compile.
 SOURCE_DIRECTORY = ./source
