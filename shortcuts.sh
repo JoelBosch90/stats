@@ -163,10 +163,10 @@ collect () {
   make;
 
   # Visible the binaries directory.
-  cd bin;
+  cd binary;
 
   # Run the collector script.
-  ./read_logs;
+  ./logs_collector;
 }
 
 # Loop through the command line arguments.
