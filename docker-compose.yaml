@@ -22,7 +22,6 @@ services:
     # start proxying.
     depends_on:
       - client
-      - server
     networks:
       - proxied
 
@@ -36,12 +35,15 @@ services:
     networks:
       - proxied
 
-  server:
-    container_name: stats.server.production
+  collector:
+    container_name: stats.collector.production
     restart: always
     build:
-      context: ./server/
+      context: ./collector/
+    volumes:
+     - ./collector/data:/data:rw
+     - ./proxy/logs:/logs:ro
     expose:
       - "80"
     networks:
-      - proxied
+      - protected
