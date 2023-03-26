@@ -43,7 +43,5 @@ services:
     volumes:
      - ./collector/data:/data:rw
      - ./proxy/logs:/logs:ro
-    expose:
-      - "80"
     networks:
       - protected

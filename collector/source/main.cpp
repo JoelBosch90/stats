@@ -6,14 +6,16 @@
 #include <functional>
 #include <sodium.h>
 
+#include <fstream>
+
 extern const int EARLY_RETURN = -1;
 
 int main()
 {
   const int SODIUM_ERROR = -1;
   const int MINUTE_IN_MILLISECONDS = 60000;
-  const std::string DATABASE_PATH = "../data/stats.db";
-  const std::string LOGFILE_PATH = "../../proxy/logs/access.log";
+  const std::string DATABASE_PATH = "/data/stats.db";
+  const std::string LOGFILE_PATH = "/logs/access.log";
 
   if (sodium_init() == SODIUM_ERROR)
   {

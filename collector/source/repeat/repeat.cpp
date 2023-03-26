@@ -1,4 +1,5 @@
 #include "repeat.h"
+#include "handle_interrupt/handle_interrupt.h"
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -9,6 +10,11 @@ void repeat(const vector<repeated_task> &tasks)
 {
   vector<chrono::time_point<chrono::system_clock>> next_times;
   next_times.reserve(tasks.size());
+
+  // While running the loop, we don't want to become unresponsive to system
+  // interrupts. Here, we use our `handle_interrupt` function to make sure that
+  // we still handle them.
+  handle_interrupt();
 
   // We are keeping a list of when to execute each task next. Initially, we
   // execute all tasks immediately.

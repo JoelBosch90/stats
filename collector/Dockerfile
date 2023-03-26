@@ -13,17 +13,15 @@ FROM base AS build
 # Install build dependencies.
 RUN apk add --no-cache build-base sqlite-dev openssl-dev libsodium-dev
 
-# Copy source code.
-COPY . /app
-
-# Build the application.
-RUN cd /app && make
+# Copy source code into a new directory and build the application there.
+COPY . /collector
+RUN cd /collector && make
 
 # Start from the base again to create the final image.
 FROM base
 
-# Copy the binary application
-COPY --from=build /app/binary/logs_collector /usr/local/bin/logs_collector
+# Copy the binary for the application.
+COPY --from=build /collector/binary/logs_collector /usr/local/bin/logs_collector
 
-# Set entry point
+# Start the program.
 ENTRYPOINT ["/usr/local/bin/logs_collector"]
