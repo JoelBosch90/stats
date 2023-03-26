@@ -14,7 +14,7 @@ access_record read_access_record(std::string line, std::string salt)
   record.request = segment_to_http_request(segments.http_request);
   record.http_status_code = segments.http_status_code.length() > 0 ? stoi(segments.http_status_code) : 0;
   record.bytes_sent = segments.bytes_sent.length() > 0 ? stoi(segments.bytes_sent) : 0;
-  record.referrer = segment_to_url(segments.referrer);
+  record.referrer = segment_to_url(segments.referrer, salt);
   record.user_agent = segment_to_agent(segments.user_agent);
 
   return record;

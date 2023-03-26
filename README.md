@@ -1,7 +1,18 @@
-# base
+# Stats
 
-This is a simple base setup using Docker Compose to host an Nginx reverse proxy
-microservice, and both an 'api' and a 'client' directories with some placeholder
-files.
-It also features a very basic GitHub pipeline for pushing changes to my VPS, and
-a bash file with some basic helper commands.
+This is a lightweight setup to provide insight into website statistics that can
+be run entirely server-side. It works by reading It uses three different
+services:
+
+## Collector
+
+This service periodically reads Nginx access logs, and stores them in an Sqlite3
+database.
+
+## API
+
+This service provides a REST API to access the data in the Sqlite3 database.
+
+## Client
+
+this service provides a web interface to view the data provided by the REST API.

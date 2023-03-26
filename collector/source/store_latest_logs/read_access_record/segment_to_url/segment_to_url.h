@@ -14,6 +14,6 @@ struct url
   std::string fragment;
 };
 
-url segment_to_url(std::string segment);
+url segment_to_url(std::string segment, std::string salt);
 
 #endif
