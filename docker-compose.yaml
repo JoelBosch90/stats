@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 
 networks:
   protected:
@@ -43,5 +43,3 @@ services:
     volumes:
      - ./collector/data:/data:rw
      - ./proxy/logs:/logs:ro
-    networks:
-      - protected
