@@ -25,7 +25,7 @@ int insert_row(string table, vector<string> columns, vector<string> values, sqli
   if (sqlite3_prepare_v2(database, query.c_str(), -1, &statement, nullptr) != SQLITE_OK)
     exit_code = EXIT_FAILURE;
 
-  for (int index = 0; index < values.size(); ++index)
+  for (int index = 0; index < values.size(); index++)
     sqlite3_bind_text(statement, index + 1, values[index].c_str(), -1, SQLITE_TRANSIENT);
 
   if (sqlite3_step(statement) != SQLITE_DONE)

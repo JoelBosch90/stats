@@ -1,15 +1,14 @@
 #include "read_lines.h"
-#include "process_reversed_line/process_reversed_line.h"
-#include "get_last_record_string/get_last_record_string.h"
 #include "only_whitespaces/only_whitespaces.h"
-#include <iostream>
+#include "reverse_string/reverse_string.h"
+#include "reverse_access_record_vector/reverse_access_record_vector.h"
 using namespace std;
 
-int read_lines(istream &input, function<int(string, vector<string>, sqlite3 *)> process, sqlite3 *database)
+vector<access_record> read_lines(istream &input, string until, string salt)
 {
+  vector<access_record> output_lines;
   string line;
-  int lines_read = 0;
-  vector<string> last_record_string = get_last_record_string(database);
+  access_record record;
   char next_char;
   string::iterator line_begin;
   string::iterator line_end;
@@ -33,10 +32,16 @@ int read_lines(istream &input, function<int(string, vector<string>, sqlite3 *)> 
     {
       if (!only_whitespaces(line))
       {
-        if (process_reversed_line(process, line, last_record_string, database) != EXIT_SUCCESS)
-          return lines_read;
-        else
-          lines_read++;
+        // Because we read from the end, the line will be reversed. We should
+        // turn it around. We want to read the time stamp, so we process the
+        // record here.
+        record = read_access_record(reverse_string(line), salt);
+
+        // Check if we've reached the until timestamp and stop reading.
+        if (record.time.local_time < until)
+          return reverse_access_record_vector(output_lines);
+
+        output_lines.push_back(record);
       }
 
       line.clear();
@@ -50,8 +55,14 @@ int read_lines(istream &input, function<int(string, vector<string>, sqlite3 *)> 
     input.seekg(-1, ios::cur);
   }
 
-  if (process_reversed_line(process, line, last_record_string, database) != EXIT_SUCCESS)
-    return lines_read;
-  else
-    return ++lines_read;
+  // Because we read from the end, the line will be reversed. We should
+  // turn it around. We want to read the time stamp, so we process the
+  // record here.
+  record = read_access_record(reverse_string(line), salt);
+
+  // Include the last read line if it is still after the until timestamp.
+  if (record.time.local_time >= until)
+    output_lines.push_back(record);
+
+  return reverse_access_record_vector(output_lines);
 }
