@@ -12,6 +12,9 @@ authentication parts of the URL with a salt that rotates daily. This means that
 it is possible to use this information to accurately calculate unique website
 visitors per day, but not across longer periods of time.
 
+Old salts get removed after two days. This means that all data is immediately
+pseudonymized and becomes truly anonymized after two days.
+
 ## Volumes
 
 This service requires two mounted volumes:
