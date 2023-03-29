@@ -4,8 +4,9 @@
 #include <istream>
 #include <string>
 #include <vector>
+#include <sqlite3.h>
 #include "../read_access_record/read_access_record.h"
 
-std::vector<access_record> read_lines(std::istream &input, std::string until, std::string salt);
+std::vector<access_record> read_lines(std::istream &input, std::string until, sqlite3 *database);
 
 #endif

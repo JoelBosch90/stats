@@ -4,7 +4,7 @@
 #include "reverse_access_record_vector/reverse_access_record_vector.h"
 using namespace std;
 
-vector<access_record> read_lines(istream &input, string until, string salt)
+vector<access_record> read_lines(istream &input, string until, sqlite3 *database)
 {
   vector<access_record> output_lines;
   string line;
@@ -35,7 +35,7 @@ vector<access_record> read_lines(istream &input, string until, string salt)
         // Because we read from the end, the line will be reversed. We should
         // turn it around. We want to read the time stamp, so we process the
         // record here.
-        record = read_access_record(reverse_string(line), salt);
+        record = read_access_record(reverse_string(line), database);
 
         // Check if we've reached the until timestamp and stop reading.
         if (record.time.local_time < until)
@@ -58,7 +58,7 @@ vector<access_record> read_lines(istream &input, string until, string salt)
   // Because we read from the end, the line will be reversed. We should
   // turn it around. We want to read the time stamp, so we process the
   // record here.
-  record = read_access_record(reverse_string(line), salt);
+  record = read_access_record(reverse_string(line), database);
 
   // Include the last read line if it is still after the until timestamp.
   if (record.time.local_time >= until)

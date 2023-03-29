@@ -1,10 +1,13 @@
 #include "hash.h"
+#include "get_salt/get_salt.h"
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 using namespace std;
 
-string hash(string string_to_hash, string salt)
+string hash(string string_to_hash, string timestamp, sqlite3 *database)
 {
+  string salt = get_salt(timestamp, database);
+
   // Get a pointer to the SHA256 digest algorithm.
   const EVP_MD *message_digest = EVP_sha256();
 

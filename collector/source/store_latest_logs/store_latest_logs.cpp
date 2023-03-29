@@ -4,9 +4,9 @@
 #include "store_records/store_records.h"
 #include "get_last_record_time/get_last_record_time.h"
 #include "subtract_day_from_string/subtract_day_from_string.h"
-#include "get_daily_salt/get_daily_salt.h"
 #include "read_access_record/read_access_record.h"
 #include "count_latest_database_records/count_latest_database_records.h"
+#include "remove_old_salts/remove_old_salts.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -48,11 +48,8 @@ int store_latest_logs(string log_file_path, string database_path)
   // than the latest record.
   string last_record_time_stamp_minus_day = subtract_day_from_string(last_record_time_stamp);
 
-  // Get the daily salt value to use for hashing while processing log records.
-  string salt = get_daily_salt(database);
-
   // Read all of the access log records that are added after this date.
-  vector<access_record> log_records = read_lines(file, last_record_time_stamp_minus_day, salt);
+  vector<access_record> log_records = read_lines(file, last_record_time_stamp_minus_day, database);
 
   // Get the number of records from the database that are added after this date.
   int database_record_count = count_latest_database_records(last_record_time_stamp_minus_day, database);
@@ -63,6 +60,9 @@ int store_latest_logs(string log_file_path, string database_path)
 
   if (store_records(new_records, database) == EXIT_SUCCESS)
     lines_read = new_records.size();
+
+  // Purge old salts from the database.
+  remove_old_salts(database);
 
   file.close();
   sqlite3_close(database);

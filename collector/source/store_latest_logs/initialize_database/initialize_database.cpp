@@ -41,6 +41,7 @@ int initialize_database(sqlite3 *database)
   vector<string> salts{
       "ID INTEGER PRIMARY KEY",
       "SALT TEXT",
+      "DATE TEXT",
       "CREATED_AT TEXT"};
   create_table("SALTS", &salts, database);
 

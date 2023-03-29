@@ -2,6 +2,7 @@
 #define SEGMENT_TO_URL_H
 
 #include <string>
+#include <sqlite3.h>
 
 struct url
 {
@@ -14,6 +15,6 @@ struct url
   std::string fragment;
 };
 
-url segment_to_url(std::string segment, std::string salt);
+url segment_to_url(std::string segment, std::string timestamp, sqlite3 *database);
 
 #endif

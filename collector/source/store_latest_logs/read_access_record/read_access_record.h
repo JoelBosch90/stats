@@ -2,6 +2,7 @@
 #define READ_ACCESS_RECORD_H
 
 #include <string>
+#include <sqlite3.h>
 #include "segment_to_moment/segment_to_moment.h"
 #include "segment_to_http_request/segment_to_http_request.h"
 #include "segment_to_url/segment_to_url.h"
@@ -21,6 +22,6 @@ struct access_record
   agent user_agent;
 };
 
-access_record read_access_record(std::string line, std::string salt);
+access_record read_access_record(std::string line, sqlite3 *database);
 
 #endif
