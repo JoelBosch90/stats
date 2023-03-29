@@ -15,4 +15,4 @@ This service provides a REST API to access the data in the Sqlite3 database.
 
 ## Client
 
-this service provides a web interface to view the data provided by the REST API.
+This service provides a web interface to view the data provided by the REST API.
