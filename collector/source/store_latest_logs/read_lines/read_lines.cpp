@@ -1,13 +1,14 @@
 #include "read_lines.h"
 #include "process_reversed_line/process_reversed_line.h"
 #include "get_last_record_string/get_last_record_string.h"
+#include "only_whitespaces/only_whitespaces.h"
+#include <iostream>
 using namespace std;
-
-extern const int EARLY_RETURN;
 
 int read_lines(istream &input, function<int(string, vector<string>, sqlite3 *)> process, sqlite3 *database)
 {
   string line;
+  int lines_read = 0;
   vector<string> last_record_string = get_last_record_string(database);
   char next_char;
   string::iterator line_begin;
@@ -30,13 +31,13 @@ int read_lines(istream &input, function<int(string, vector<string>, sqlite3 *)> 
 
     if (next_char == '\n')
     {
-      int exit_code = process_reversed_line(process, line, last_record_string, database);
-
-      if (exit_code == EARLY_RETURN)
-        return EXIT_SUCCESS;
-
-      if (exit_code != EXIT_SUCCESS)
-        return EXIT_FAILURE;
+      if (!only_whitespaces(line))
+      {
+        if (process_reversed_line(process, line, last_record_string, database) != EXIT_SUCCESS)
+          return lines_read;
+        else
+          lines_read++;
+      }
 
       line.clear();
     }
@@ -49,5 +50,8 @@ int read_lines(istream &input, function<int(string, vector<string>, sqlite3 *)> 
     input.seekg(-1, ios::cur);
   }
 
-  return process_reversed_line(process, line, last_record_string, database);
+  if (process_reversed_line(process, line, last_record_string, database) != EXIT_SUCCESS)
+    return lines_read;
+  else
+    return ++lines_read;
 }

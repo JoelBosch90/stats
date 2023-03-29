@@ -5,6 +5,9 @@
 #include <functional>
 #include <sodium.h>
 #include <cstdlib>
+#include <cstring>
+#include <chrono>
+#include <iomanip>
 
 extern const int EARLY_RETURN = -1;
 
@@ -31,9 +34,17 @@ int main()
 
   // Make sure that we use our default values in case the environment variables
   // are not set.
-  const std::string database_path = "/data/" + (database_name_env ? database_name_env : DEFAULT_DATABASE_NAME);
-  const std::string logfile_path = "/logs/" + (logfile_name_env ? logfile_name_env : DEFAULT_LOGFILE_NAME);
+  const std::string production_database_path = "/data/" + (database_name_env ? database_name_env : DEFAULT_DATABASE_NAME);
+  const std::string production_logfile_path = "/logs/" + (logfile_name_env ? logfile_name_env : DEFAULT_LOGFILE_NAME);
   const int update_interval = update_interval_env ? std::atoi(update_interval_env) : DEFAULT_UPDATE_INTERVAL;
+
+  // Check to see if we should run in development mode.
+  const char *mode = std::getenv("MODE");
+  const bool inDevelopmentMode = (mode != nullptr && std::strcmp(mode, "DEVELOPMENT") == 0);
+
+  // Use these alternative paths for easy testing during development.
+  const std::string database_path = inDevelopmentMode ? "../data/stats.db" : production_database_path;
+  const std::string logfile_path = inDevelopmentMode ? "../../proxy/logs/access.log" : production_logfile_path;
 
   // We use the Sodium library to generate new salts. To be able to use this, we
   // need to initialize it here.
@@ -48,7 +59,12 @@ int main()
   // reading and storing the latest access logs to the database.
   repeated_task store_latest_logs_task = {
       [&]()
-      { store_latest_logs(logfile_path, database_path); },
+      {
+        std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+        std::time_t time = std::chrono::system_clock::to_time_t(now);
+        int number_of_logs_stored = store_latest_logs(logfile_path, database_path);
+        std::cout << "Imported " << number_of_logs_stored << " new lines at " << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S") << std::endl;
+      },
       update_interval};
   std::vector<repeated_task> tasks = {store_latest_logs_task};
 

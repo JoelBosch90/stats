@@ -166,7 +166,7 @@ collect () {
   cd binary;
 
   # Run the collector script.
-  ./logs_collector;
+  env MODE=DEVELOPMENT ./logs_collector;
 }
 
 # Loop through the command line arguments.
