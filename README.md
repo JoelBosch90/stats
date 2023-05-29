@@ -1,3 +1,5 @@
+**Note that this is currently an incomplete product and in active development.**
+
 # Stats
 
 This is a lightweight setup to provide insight into website statistics that can
@@ -12,7 +14,3 @@ database.
 ## API
 
 This service provides a REST API to access the data in the Sqlite3 database.
-
-## Client
-
-This service provides a web interface to view the data provided by the REST API.
