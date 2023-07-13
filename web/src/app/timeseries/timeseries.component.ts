@@ -9,5 +9,22 @@ import { TimeseriesRow, timeseries } from '../example-timeseries';
 })
 export class TimeseriesComponent {
   displayedColumns: string[] = ['timestamp', 'amount'];
-  dataSource = [...timeseries];
+  tableData = [...timeseries];
+  chartData = [{
+    name: "Page views",
+    series: timeseries.map(({ timestamp, amount }) => ({ name: timestamp, value: amount }))
+  }];
+
+  view: [number, number] = [800, 400];
+  legend: boolean = true;
+  showLabels: boolean = true;
+  animations: boolean = true;
+  xAxis: boolean = true;
+  yAxis: boolean = true;
+  xAxisLabel: string = 'Date';
+  yAxisLabel: string = 'Amount';
+  showYAxisLabel: boolean = true;
+  showXAxisLabel: boolean = true;
+
+  constructor() {}
 }

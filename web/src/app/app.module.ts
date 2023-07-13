@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule } from '@angular/material/table';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -31,6 +32,7 @@ import { TimeseriesComponent } from './timeseries/timeseries.component';
     ReactiveFormsModule,
     BrowserModule,
     AppRoutingModule,
+    NgxChartsModule,
     RouterModule.forRoot([
       { path: 'login', component: LoginComponent },
       { path: 'logs', component: LogsComponent },

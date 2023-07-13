@@ -1,4 +1,16 @@
-<table mat-table [dataSource]="dataSource">
+<ngx-charts-line-chart
+  [view]="view"
+  [legend]="legend"
+  [showXAxisLabel]="showXAxisLabel"
+  [showYAxisLabel]="showYAxisLabel"
+  [xAxis]="xAxis"
+  [yAxis]="yAxis"
+  [xAxisLabel]="xAxisLabel"
+  [yAxisLabel]="yAxisLabel"
+  [results]="chartData">
+</ngx-charts-line-chart>
+
+<table mat-table [dataSource]="tableData">
   <ng-container matColumnDef="timestamp">
     <th mat-header-cell *matHeaderCellDef> Timestamp </th>
     <td mat-cell *matCellDef="let timeseriesRow"> {{ timeseriesRow.timestamp }}</td>
