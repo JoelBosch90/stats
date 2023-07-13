@@ -13,12 +13,14 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LogsComponent } from './logs/logs.component';
+import { TimeseriesComponent } from './timeseries/timeseries.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    LogsComponent
+    LogsComponent,
+    TimeseriesComponent
   ],
   imports: [
     MatButtonModule,
@@ -31,7 +33,8 @@ import { LogsComponent } from './logs/logs.component';
     AppRoutingModule,
     RouterModule.forRoot([
       { path: 'login', component: LoginComponent },
-      { path: 'logs', component: LogsComponent }
+      { path: 'logs', component: LogsComponent },
+      { path: 'timeseries', component: TimeseriesComponent }
     ]),
     BrowserAnimationsModule
   ],
