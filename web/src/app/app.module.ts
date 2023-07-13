@@ -10,11 +10,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LogsComponent } from './logs/logs.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    LogsComponent
   ],
   imports: [
     MatButtonModule,
@@ -25,7 +27,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     BrowserModule,
     AppRoutingModule,
     RouterModule.forRoot([
-      { path: '', component: LoginComponent }
+      { path: 'login', component: LoginComponent },
+      { path: 'logs', component: LogsComponent }
     ]),
     BrowserAnimationsModule
   ],
