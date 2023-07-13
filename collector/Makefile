@@ -18,7 +18,7 @@ LIBRARIES = sqlite3 ssl crypto sodium
 SUBDIRECTORIES = $(shell find $(SOURCE_DIRECTORY) -type d)
 
 # List all of the C++ files in the subdirectories.
-SOURCE_FILES += $(foreach subdirectory,$(SUBDIRECTORIES),$(wildcard $(subdirectory)/*.cpp))
+SOURCE_FILES += $(foreach subdirectory, $(SUBDIRECTORIES), $(wildcard $(subdirectory)/*.cpp))
 
 # We assume that each C++ file is accompanied by a header file by the same name.
 HEADER_FILES = $(SOURCE_FILES:.cpp=.h)
@@ -29,7 +29,7 @@ OBJECT_FILES = $(SOURCE_FILES:.cpp=.o)
 
 # Generate include flags for each subdirectory, and add them to the compiler
 # flags.
-INCLUDE_FLAGS = $(foreach subdirectory,$(SUBDIRECTORIES),-I$(subdirectory))
+INCLUDE_FLAGS = $(foreach subdirectory, $(SUBDIRECTORIES), -I$(subdirectory))
 COMPILER_FLAGS += $(INCLUDE_FLAGS)
 
 # Create the target flag.
