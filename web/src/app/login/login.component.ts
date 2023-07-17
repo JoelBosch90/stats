@@ -8,7 +8,6 @@ import { FormBuilder } from '@angular/forms';
 })
 export class LoginComponent {
   loginForm = this.formBuilder.group({
-    userName: '',
     password: ''
   });
 

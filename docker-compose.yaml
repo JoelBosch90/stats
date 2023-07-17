@@ -21,15 +21,15 @@ services:
     # Make sure that all services that need to be proxied are running before we
     # start proxying.
     depends_on:
-      - client
+      - web
     networks:
       - proxied
 
-  client:
-    container_name: stats.client.production
+  web:
+    container_name: stats.web.production
     restart: always
     build:
-      context: ./client/
+      context: ./web/
     expose:
       - "80"
     networks:

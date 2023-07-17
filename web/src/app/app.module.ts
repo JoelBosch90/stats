@@ -34,7 +34,7 @@ import { TimeseriesComponent } from './timeseries/timeseries.component';
     AppRoutingModule,
     NgxChartsModule,
     RouterModule.forRoot([
-      { path: 'login', component: LoginComponent },
+      { path: '', component: LoginComponent },
       { path: 'logs', component: LogsComponent },
       { path: 'timeseries', component: TimeseriesComponent }
     ]),
