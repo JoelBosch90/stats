@@ -63,7 +63,11 @@ int main()
         std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
         std::time_t time = std::chrono::system_clock::to_time_t(now);
         int number_of_logs_stored = store_latest_logs(logfile_path, database_path);
-        std::cout << "Imported " << number_of_logs_stored << " new lines at " << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S") << std::endl;
+
+        if (number_of_logs_stored > 0)
+        {
+          std::cout << "Imported " << number_of_logs_stored << " new lines at " << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S") << std::endl;
+        }
       },
       update_interval};
   std::vector<repeated_task> tasks = {store_latest_logs_task};
