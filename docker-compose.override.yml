@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  proxy:
+    container_name: stats.proxy.development
+    volumes:
+      - ./proxy/development.conf:/etc/nginx/nginx.conf
+      - ./proxy/logs:/var/log/nginx
+
+  web:
+    container_name: stats.web.development
+    restart: always
+    build:
+      context: ./web/
+      dockerfile: development.dockerfile
+    expose:
+      - "80"
+    networks:
+      - proxied
+    volumes:
+    - ./web:/web
+
+  collector:
+    container_name: stats.collector.development
+    environment:
+      DATABASE_NAME: "stats.db"
+      LOGFILE_NAME: "access.log"
+      UPDATE_INTERVAL: "60000"
+    volumes:
+     - ./collector/data:/data:rw
+     - ./proxy/logs:/logs:ro

@@ -30,6 +30,7 @@ services:
     restart: always
     build:
       context: ./web/
+      dockerfile: production.dockerfile
     expose:
       - "80"
     networks:

@@ -78,7 +78,7 @@ runDevelopment () {
   rm -f ~/.docker/config.json;
 
   # Spin up the Docker Compose network with the development settings.
-  docker-compose -f docker-compose.dev.yml up $1;
+  docker-compose -f docker-compose.yml -f docker-compose.override.yml up $1;
 }
 
 ################################################################################
@@ -97,7 +97,7 @@ runProduction () {
   rm -f ~/.docker/config.json;
 
   # Spin up the Docker Compose network with the production settings.
-  docker-compose up $1;
+  docker-compose -f docker-compose.yml up $1;
 }
 
 ################################################################################
