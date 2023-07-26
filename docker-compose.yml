@@ -1,8 +1,6 @@
 version: "3.9"
 
 networks:
-  protected:
-
   # Only the proxy will be exposed to the outside network. All services that
   # need to be accessible outside of the network need to be in this network.
   proxied:
@@ -22,6 +20,21 @@ services:
     # start proxying.
     depends_on:
       - web
+    networks:
+      - proxied
+
+  api:
+    container_name: stats.api.production
+    restart: always
+    build:
+      context: ./api/
+    expose:
+      - "80"
+    environment:
+      DATABASE_NAME: "stats.db"
+      UPDATE_INTERVAL: "60000"
+    volumes:
+     - ./collector/data:/data:rw
     networks:
       - proxied
 

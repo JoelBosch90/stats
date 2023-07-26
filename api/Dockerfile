@@ -16,5 +16,5 @@ FROM eclipse-temurin:20-jre-alpine as runtime
 # Copy only the executable from the build stage to the runtime stage.
 COPY --from=build /usr/src/app/target/api-0.0.1-SNAPSHOT.jar /executable.jar
 
-# Run the executable.
-ENTRYPOINT ["java", "-jar", "/executable.jar"]
+# Run the executable, make sure that we run on port 80.
+ENTRYPOINT ["java", "-jar", "/executable.jar", "--server.port=80"]

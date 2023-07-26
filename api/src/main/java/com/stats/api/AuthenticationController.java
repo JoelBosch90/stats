@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthenticationController {
 
-  @RequestMapping("/authenticate")
+  @RequestMapping("/api/authenticate")
   public String authenticate() {
     return "Hello world!";
   }
