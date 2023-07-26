@@ -8,6 +8,6 @@ public class AuthenticationController {
 
   @RequestMapping("/authenticate")
   public String authenticate() {
-    return "hello world";
+    return "Hello world!";
   }
 }
