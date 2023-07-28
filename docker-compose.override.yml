@@ -1,11 +1,27 @@
 version: "3.9"
 
+networks:
+  # Only the proxy will be exposed to the outside network. All services that
+  # need to be accessible outside of the network need to be in this network.
+  proxied:
+
 services:
   proxy:
     container_name: stats.proxy.development
     volumes:
-      - ./proxy/development.conf:/etc/nginx/nginx.conf
-      - ./proxy/logs:/var/log/nginx
+      - ./proxy/development.conf:/etc/nginx/nginx.conf:ro
+      - ./proxy/logs:/var/log/nginx:rw
+
+  api:
+    container_name: stats.api.development
+    build:
+      context: ./api/
+      dockerfile: development.dockerfile
+    volumes:
+     - ./collector/data:/data:rw
+     - ./api:/api:rw
+    networks:
+      - proxied
 
   web:
     container_name: stats.web.development
@@ -18,7 +34,7 @@ services:
     networks:
       - proxied
     volumes:
-    - ./web:/web
+    - ./web:/web:rw
 
   collector:
     container_name: stats.collector.development

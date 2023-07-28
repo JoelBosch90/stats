@@ -83,6 +83,21 @@ runDevelopment () {
 
 ################################################################################
 #
+#   build
+#       Function to recompile the API on the fly.
+#
+################################################################################
+build () {
+
+  # Visit the project's API directory.
+  cd $WORKDIR/api;
+
+  # Recompile the running container.
+  ./mvnw compile;
+}
+
+################################################################################
+#
 #   runProduction
 #       Function to spin up a production environment example.
 #
@@ -204,6 +219,12 @@ while [[ $# -gt 0 ]]; do
     # stats setup application.
     d|dev|development)
       runDevelopment "$argument"
+      shift # Get ready to process the next command.
+      ;;
+
+    # Run `stats build` to rebuild the local development setup while running.
+    b|build)
+      build
       shift # Get ready to process the next command.
       ;;
 

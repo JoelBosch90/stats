@@ -28,6 +28,7 @@ services:
     restart: always
     build:
       context: ./api/
+      dockerfile: production.dockerfile
     expose:
       - "80"
     environment:
