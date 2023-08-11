@@ -32,6 +32,9 @@ services:
     expose:
       - "80"
     environment:
+      EXPECTED_ORIGIN: ${EXPECTED_ORIGIN}
+      SUPERUSER_NAME: ${SUPERUSER_NAME}
+      SUPERUSER_PASSWORD: ${SUPERUSER_PASSWORD}
       DATABASE_NAME: "stats.db"
       UPDATE_INTERVAL: "60000"
     volumes:

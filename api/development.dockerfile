@@ -8,5 +8,5 @@ COPY . /api
 # Create the executable JAR file.
 RUN mvn install
 
-# Run the executable, make sure that we run on port 80.
-ENTRYPOINT ["mvn", "spring-boot:run", "-Dspring-boot.run.arguments=--server.port=80"]
+# Run the api using Maven.
+ENTRYPOINT ["mvn", "spring-boot:run"]

@@ -8,12 +8,15 @@ import { FormBuilder } from '@angular/forms';
 })
 export class LoginComponent {
   loginForm = this.formBuilder.group({
-    password: ''
+    password: '',
+    username: ''
   });
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+  ) {}
 
   onSubmit(): void {
-    console.log('Submit!');
+    console.log(this);
   }
 }
