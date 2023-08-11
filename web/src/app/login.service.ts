@@ -1,5 +1,6 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
@@ -24,11 +25,11 @@ export class LoginService {
   }
 
   public authenticate(credentials: Credentials): Observable<Credentials> {
-    console.log('authenticating', credentials);
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
 
-    return this.http.post<Credentials>("http://localhost:8009/api/authenticate", credentials)
-      .pipe(
-        catchError(this.handleError)
-      )
+    return this.http.post<Credentials>("/api/authenticate", credentials, { headers })
+      .pipe(catchError(this.handleError));
   }
 }

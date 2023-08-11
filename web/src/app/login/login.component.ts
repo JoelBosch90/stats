@@ -37,6 +37,9 @@ export class LoginComponent {
   onSubmit(): void {
     const { username, password } = this.loginForm.value;
     
-    if (username && password) this.loginService.authenticate({ username, password });
+    // We need both a valid username and a valid password.
+    if (!(username && password) || !this.loginForm.valid) return;
+    
+    this.loginService.authenticate({ username, password }).subscribe();
   }
 }
