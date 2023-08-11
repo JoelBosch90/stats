@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -28,6 +29,7 @@ import { TimeseriesComponent } from './timeseries/timeseries.component';
     MatInputModule,
     MatFormFieldModule,
     MatTableModule,
+    HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserModule,
