@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 
 interface Credentials {
   username: string;
@@ -24,12 +24,12 @@ export class LoginService {
     return throwError(() => new Error("Could not authenticate. Please try again later."));
   }
 
-  public authenticate(credentials: Credentials): Observable<Credentials> {
+  public authenticate(credentials: Credentials): Observable<boolean> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
 
-    return this.http.post<Credentials>("/api/authenticate", credentials, { headers })
+    return this.http.post<boolean>("/api/login", credentials, { headers })
       .pipe(catchError(this.handleError));
   }
 }
