@@ -15,6 +15,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc
@@ -29,7 +30,20 @@ public class AuthenticationControllerTests {
   private ObjectMapper objectMapper;
 
   @Test
-  public void csrfFailure() throws Exception {
+  public void getCSRF() throws Exception {
+    this.mockMvc.perform(get("/csrf"))
+      .andExpect(status().isOk())
+      .andExpect(unauthenticated())
+      .andExpect(redirectedUrl(null))
+      .andExpect(forwardedUrl(null))
+      // Check that the response is not empty.
+//      .andExpect(jsonPath("$").isString())
+//      .andExpect(jsonPath("$").isNotEmpty())
+      .andReturn();
+  }
+
+  @Test
+  public void loginWithoutCSRF() throws Exception {
     Map<String, Object> body = new HashMap<>();
     body.put("username", "user");
     body.put("password", "password");

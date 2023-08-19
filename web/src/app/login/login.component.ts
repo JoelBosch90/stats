@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AbstractControl, FormBuilder, ValidationErrors } from '@angular/forms';
+
+import { catchError } from 'rxjs/operators';
 
 import { LoginService } from '../login.service';
 
@@ -34,12 +37,12 @@ export class LoginComponent {
     private loginService: LoginService,
   ) {}
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     const { username, password } = this.loginForm.value;
     
     // We need both a valid username and a valid password.
     if (!(username && password) || !this.loginForm.valid) return;
     
-    this.loginService.authenticate({ username, password }).subscribe();
+    this.loginService.authenticate({ username, password });
   }
 }
