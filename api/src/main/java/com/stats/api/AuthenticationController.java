@@ -1,8 +1,6 @@
 package com.stats.api;
 
 import java.util.Map;
-import java.util.logging.Logger;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AuthenticationController {
-  private static final Logger LOGGER = Logger.getLogger(AuthenticationController.class.getName());
   private final CsrfTokenRepository csrfTokenRepository;
 
   @Autowired
