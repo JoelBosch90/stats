@@ -1,8 +1,5 @@
 import { Component } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
 import { AbstractControl, FormBuilder, ValidationErrors } from '@angular/forms';
-
-import { catchError } from 'rxjs/operators';
 
 import { LoginService } from '../login.service';
 
