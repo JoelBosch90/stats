@@ -1,0 +1,13 @@
+:host {
+  width: 100%;
+  margin-bottom: 2em;
+
+  mat-toolbar {
+    display: flex;
+    justify-content: center;
+  }
+  
+  a {
+    text-decoration: none;
+  }
+}
