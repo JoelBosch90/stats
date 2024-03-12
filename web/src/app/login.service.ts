@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpXsrfTokenExtractor } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
-import { concatMap, catchError } from 'rxjs/operators';
+import { concatMap, catchError, tap } from 'rxjs/operators';
 
 interface Credentials {
   username: string;
@@ -14,23 +15,49 @@ interface Credentials {
 })
 export class LoginService {
   private csrfRequest: Observable<any>;
+  private loggedIn = true; // TODO: Change this to false after development.
   
-  constructor(private http: HttpClient, private tokenExtractor: HttpXsrfTokenExtractor) {
-    // Make sure that we get the XSRF-TOKEN cookie from the server.
-    this.csrfRequest = this.http.get('/api/csrf');
+  constructor(private http: HttpClient, private router: Router) {
+    this.csrfRequest = this.requestNewCsrfToken();
     this.csrfRequest.subscribe();
   }
 
-  public authenticate(credentials: Credentials) {
+  private requestNewCsrfToken() {
+    return this.http.get('/api/csrf');
+  }
+
+  public login(credentials: Credentials) {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
   
     return this.csrfRequest.pipe(
-      concatMap(() => {
-        return this.http.post("/api/login", credentials, { headers, observe: 'response', responseType: 'text' });
+      concatMap(() => this.http.post("/api/login", credentials, { headers, observe: 'response', responseType: 'text' })),
+      tap({
+        next: () => this.loggedIn = true,
+        error: () => this.loggedIn = false
       }),
-      catchError((error: unknown) => throwError(() => error))
+      catchError((error: unknown) => {
+        return throwError(() => error);
+      })
     );
+  }
+
+  public isLoggedIn() {
+    return this.loggedIn;
+  }
+
+  public logout() {
+    this.loggedIn = false;    
+    const logoutObservable = this.http.post("/api/logout", {});
+
+    // Logging out invalidates the CSRF token, so we need to request a new one.
+    this.csrfRequest = logoutObservable.pipe(
+      concatMap(() => this.requestNewCsrfToken())
+    );
+    this.csrfRequest.subscribe();
+
+    this.router.navigate(['/login']);
+    return logoutObservable;
   }
 }

@@ -45,7 +45,7 @@ export class LoginComponent {
     // We need both a valid username and a valid password.
     if (!(username && password) || !this.loginForm.valid) return;
     
-    this.loginService.authenticate({ username, password }).subscribe({
+    this.loginService.login({ username, password }).subscribe({
       next: () => {
         this.errorMessage = null;
         this.router.navigate(['/']);
