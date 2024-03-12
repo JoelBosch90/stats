@@ -22,7 +22,6 @@ public class SecurityConfiguration {
   static public CsrfTokenRepository csrfTokenRepository() {
     CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
     repository.setCookiePath("/");
-    repository.setHeaderName("x-xsrf-token");
     return repository;
   }
 
@@ -43,6 +42,7 @@ public class SecurityConfiguration {
         .csrfTokenRepository(SecurityConfiguration.csrfTokenRepository())
         .csrfTokenRequestHandler(SecurityConfiguration.csrfRequestAttributeHandler()));
 
+    // Allow public endpoints to be accessed without authentication.
     http.authorizeHttpRequests(registry -> {
       for (String endpoint : PUBLIC_ENDPOINTS) {
         registry.requestMatchers(endpoint).permitAll();

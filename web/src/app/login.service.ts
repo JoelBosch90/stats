@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponse, HttpXsrfTokenExtractor } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpXsrfTokenExtractor } from '@angular/common/http';
+import { throwError } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
-import { concatMap } from 'rxjs/operators';
+import { concatMap, catchError } from 'rxjs/operators';
 
 interface Credentials {
   username: string;
@@ -20,17 +21,16 @@ export class LoginService {
     this.csrfRequest.subscribe();
   }
 
-  public async authenticate(credentials: Credentials) {
+  public authenticate(credentials: Credentials) {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
-
-    this.csrfRequest
-      .pipe(concatMap(() => {
+  
+    return this.csrfRequest.pipe(
+      concatMap(() => {
         return this.http.post("/api/login", credentials, { headers, observe: 'response', responseType: 'text' });
-      }))
-      .subscribe((response: HttpResponse<string>) => {
-        console.log('response gotten', response.headers);
-      });
+      }),
+      catchError((error: unknown) => throwError(() => error))
+    );
   }
 }

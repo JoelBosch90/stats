@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { AbstractControl, FormBuilder, ValidationErrors } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoginService } from '../login.service';
 
@@ -9,7 +11,8 @@ import { LoginService } from '../login.service';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
-  loginForm = this.formBuilder.group({
+  public errorMessage: string | null = null;
+  public loginForm = this.formBuilder.group({
     password: [''],
     username: [''],
   }, { validators: (control: AbstractControl): ValidationErrors | null => {
@@ -32,6 +35,8 @@ export class LoginComponent {
   constructor(
     private formBuilder: FormBuilder,
     private loginService: LoginService,
+    private snackBar: MatSnackBar,
+    private router: Router,
   ) {}
 
   async onSubmit(): Promise<void> {
@@ -40,6 +45,16 @@ export class LoginComponent {
     // We need both a valid username and a valid password.
     if (!(username && password) || !this.loginForm.valid) return;
     
-    this.loginService.authenticate({ username, password });
+    this.loginService.authenticate({ username, password }).subscribe({
+      next: () => {
+        this.errorMessage = null;
+        this.router.navigate(['/']);
+      },
+      error: () => {
+        this.snackBar.open("Failed to log in. Please check your username and password.", "Close", {
+          duration: 5000,
+        });
+      }
+    });
   }
 }

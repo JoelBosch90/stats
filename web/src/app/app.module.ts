@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule } from '@angular/material/table';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -29,11 +30,9 @@ import { TimeseriesComponent } from './timeseries/timeseries.component';
     MatInputModule,
     MatFormFieldModule,
     MatTableModule,
+    MatSnackBarModule,
     HttpClientModule,
-    HttpClientXsrfModule.withOptions({
-      cookieName: 'XSRF-TOKEN',
-      headerName: 'x-xsrf-token',
-    }),
+    HttpClientXsrfModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserModule,
