@@ -73,13 +73,9 @@ public class AuthenticationController {
   }
 
   @GetMapping("/csrf")
-  public CsrfToken csrf(HttpServletRequest request, HttpServletResponse response) {
-    LOGGER.info("This is also a debug message");
-
+  public void csrf(HttpServletRequest request, HttpServletResponse response) {
     // Generate a new CSRF token for this session on the server.
     CsrfToken token = csrfTokenRepository.generateToken(request);
     csrfTokenRepository.saveToken(token, request, response);
-
-    return token;
   }
 }

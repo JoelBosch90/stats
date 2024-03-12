@@ -21,10 +21,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
-
-import jakarta.servlet.Filter;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -40,41 +38,21 @@ public class SecurityConfiguration {
   }
 
   @Bean
-  public FilterRegistrationBean<Filter> csrfLoggingFilter(CsrfTokenRepository csrfTokenRepository) {
-    FilterRegistrationBean<Filter> registrationBean = new FilterRegistrationBean<>();
+  static public CsrfTokenRequestAttributeHandler csrfRequestAttributeHandler() {
+    CsrfTokenRequestAttributeHandler csrfRequestHandler = new CsrfTokenRequestAttributeHandler();
 
-    Filter filter = new Filter() {
-      @Override
-      public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-          throws IOException, ServletException {
-        if (request instanceof HttpServletRequest) {
-          HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-          String header = httpServletRequest.getHeader("x-xsrf-token");
-          System.out.println("X-XSRF-TOKEN before CsrfFilter: " + header);
-        }
-        chain.doFilter(request, response);
-      }
-
-      @Override
-      public void init(FilterConfig filterConfig) {
-      }
-
-      @Override
-      public void destroy() {
-      }
-    };
-
-    registrationBean.setFilter(filter);
-    registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE); // Set the order to the highest value to make it the last
-                                                           // filter before CsrfFilter
-
-    return registrationBean;
+    // We won't be using the attribute at all, so we have to explicitly disable
+    // it. See: https://stackoverflow.com/a/75920811/9978332 for reference.
+    csrfRequestHandler.setCsrfRequestAttributeName(null);
+    return csrfRequestHandler;
   }
 
   @Bean
   static public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     // Enable CSRF protection for all requests.
-    http.csrf(csrf -> csrf.csrfTokenRepository(SecurityConfiguration.csrfTokenRepository()));
+    http.csrf(csrf -> csrf
+        .csrfTokenRepository(SecurityConfiguration.csrfTokenRepository())
+        .csrfTokenRequestHandler(SecurityConfiguration.csrfRequestAttributeHandler()));
 
     http.authorizeHttpRequests(registry -> {
       for (String endpoint : PUBLIC_ENDPOINTS) {
@@ -85,17 +63,17 @@ public class SecurityConfiguration {
     });
 
     // Make sure that we don't get the default logout redirects.
-    // http.logout(logout -> logout.permitAll()
-    // .logoutSuccessHandler((request, response, authentication) -> {
-    // response.setStatus(HttpServletResponse.SC_OK);
-    // })
-    // .deleteCookies("JSESSIONID")
-    // .invalidateHttpSession(true)
-    // .clearAuthentication(true));
+    http.logout(logout -> logout.permitAll()
+        .logoutSuccessHandler((request, response, authentication) -> {
+          response.setStatus(HttpServletResponse.SC_OK);
+        })
+        .deleteCookies("JSESSIONID")
+        .invalidateHttpSession(true)
+        .clearAuthentication(true));
+
     // Send unauthenticated users a Forbidden HTTP response code by default.
     http.exceptionHandling(
-        customizer -> customizer.accessDeniedHandler(new LoggingAccessDeniedHandler())
-            .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.FORBIDDEN)));
+        customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.FORBIDDEN)));
 
     return http.build();
   }
