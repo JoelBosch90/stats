@@ -2,9 +2,10 @@ package com.stats.api;
 
 import java.util.Map;
 import java.util.logging.Logger;
+
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
@@ -28,48 +29,37 @@ public class AuthenticationController {
 
   @PostMapping(value = "/login", produces = "text/plain")
   public ResponseEntity<String> login(@RequestBody Map<String, String> payload, HttpServletRequest request) {
-    LOGGER.info("This is a debug message");
+    String username = payload.get("username");
+    String password = payload.get("password");
 
-    return new ResponseEntity<String>("happy", HttpStatus.OK);
+    // Should log out the previous session before creating a new one.
+    if (request.getUserPrincipal() != null) {
+      try {
+        request.logout();
+      } catch (ServletException exception) {
+        return new ResponseEntity<String>("Already logged in and cannot be logged out.",
+            HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
 
-    // String username = payload.get("username");
-    // String password = payload.get("password");
+    try {
+      request.login(username, password);
+    } catch (ServletException exception) {
+      return new ResponseEntity<String>("Username and password do not match.", HttpStatus.UNAUTHORIZED);
+    }
 
-    // // Should log out the previous session before creating a new one.
-    // if (request.getUserPrincipal() != null)
-    // try {
-    // request.logout();
-    // } catch (ServletException exception) {
-    // return new ResponseEntity<String>("Already logged in.",
-    // HttpStatus.BAD_REQUEST);
-    // }
-
-    // try {
-    // request.login(username, password);
-    // } catch (ServletException exception) {
-    // return new ResponseEntity<String>("Username and password do not match.",
-    // HttpStatus.UNAUTHORIZED);
-    // }
-
-    // return new ResponseEntity<String>("Login successful.", HttpStatus.OK);
+    return new ResponseEntity<String>("Login successful.", HttpStatus.OK);
   }
 
   @PostMapping(value = "/logout", produces = "text/plain")
   public ResponseEntity<String> logout(HttpServletRequest request) {
-    LOGGER.info("This is a debug message");
+    try {
+      request.logout();
+      return new ResponseEntity<String>("Logout successful.", HttpStatus.OK);
 
-    return new ResponseEntity<String>("happy", HttpStatus.OK);
-    // try {
-    // request.logout();
-    // } catch (ServletException exception) {
-    // // This is an odd scenario that probably shouldn't happen as either the user
-    // is
-    // // logged in and can be logged out,
-    // // or the user is not logged in and thus cannot reach this endpoint.
-    // return "Logout unsuccessful.";
-    // }
-
-    // return "Logout successful.";
+    } catch (ServletException exception) {
+      return new ResponseEntity<String>("Logout unsuccessful.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @GetMapping("/csrf")
