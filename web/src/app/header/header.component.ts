@@ -11,6 +11,6 @@ export class HeaderComponent {
   constructor(private loginService: LoginService) {}
 
   public logout() {
-    this.loginService.logout();
+    this.loginService.logout().subscribe();
   }
 }

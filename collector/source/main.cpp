@@ -46,6 +46,12 @@ int main()
   const std::string database_path = inDevelopmentMode ? "../data/stats.db" : production_database_path;
   const std::string logfile_path = inDevelopmentMode ? "../../proxy/logs/access.log" : production_logfile_path;
 
+  // Log the settings we'll use.
+  std::cout << "Collecting with the following settings:" << std::endl;
+  std::cout << "UPDATE_INTERVAL: " << update_interval << std::endl;
+  std::cout << "DATABASE_PATH: " << database_path << std::endl;
+  std::cout << "LOGFILE_PATH: " << logfile_path << std::endl;
+
   // We use the Sodium library to generate new salts. To be able to use this, we
   // need to initialize it here.
   if (sodium_init() == SODIUM_ERROR)

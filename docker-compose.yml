@@ -34,8 +34,8 @@ services:
     environment:
       SUPERUSER_NAME: ${SUPERUSER_NAME}
       SUPERUSER_PASSWORD: ${SUPERUSER_PASSWORD}
-      DATABASE_NAME: "stats.db"
-      UPDATE_INTERVAL: "60000"
+      DATABASE_NAME: ${DATABASE_NAME}
+      UPDATE_INTERVAL: ${UPDATE_INTERVAL}
     volumes:
      - ./collector/data:/data:rw
     networks:
@@ -58,9 +58,9 @@ services:
     build:
       context: ./collector/
     environment:
-      DATABASE_NAME: "stats.db"
-      LOGFILE_NAME: "access.log"
-      UPDATE_INTERVAL: "60000"
+      DATABASE_NAME: ${DATABASE_NAME}
+      LOGFILE_NAME: ${LOGFILE_NAME}
+      UPDATE_INTERVAL: ${UPDATE_INTERVAL}
     volumes:
      - ./collector/data:/data:rw
      - ./proxy/logs:/logs:ro

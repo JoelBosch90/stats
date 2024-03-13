@@ -16,7 +16,7 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
-  private static final List<String> PUBLIC_ENDPOINTS = List.of("/login", "/logout", "/csrf", "/public");
+  private static final List<String> PUBLIC_ENDPOINTS = List.of("/login", "/logout", "/csrf");
 
   @Bean
   static public CsrfTokenRepository csrfTokenRepository() {

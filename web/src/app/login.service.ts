@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { throwError } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs/internal/Observable';
-import { concatMap, catchError, tap } from 'rxjs/operators';
+import { concatMap, tap } from 'rxjs/operators';
+
+import { DataService } from './data.service';
 
 interface Credentials {
   username: string;
@@ -15,9 +17,13 @@ interface Credentials {
 })
 export class LoginService {
   private csrfRequest: Observable<any>;
-  private loggedIn = true; // TODO: Change this to false after development.
   
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private dataService: DataService,
+    private snackBar: MatSnackBar,
+  ) {
     this.csrfRequest = this.requestNewCsrfToken();
     this.csrfRequest.subscribe();
   }
@@ -34,30 +40,31 @@ export class LoginService {
     return this.csrfRequest.pipe(
       concatMap(() => this.http.post("/api/login", credentials, { headers, observe: 'response', responseType: 'text' })),
       tap({
-        next: () => this.loggedIn = true,
-        error: () => this.loggedIn = false
-      }),
-      catchError((error: unknown) => {
-        return throwError(() => error);
+        next: () => this.dataService.set('loggedIn', true),
+        error: () => this.dataService.set('loggedIn', false),
       })
     );
   }
 
-  public isLoggedIn() {
-    return this.loggedIn;
-  }
-
   public logout() {
-    this.loggedIn = false;    
     const logoutObservable = this.http.post("/api/logout", {});
 
     // Logging out invalidates the CSRF token, so we need to request a new one.
     this.csrfRequest = logoutObservable.pipe(
-      concatMap(() => this.requestNewCsrfToken())
+      concatMap(() => this.requestNewCsrfToken()),
+      tap({
+        next: () => {
+          this.dataService.set('loggedIn', false);  
+          this.router.navigate(['/login']);
+        },
+        error: () => {
+          this.snackBar.open("Server error: failed to log out.", "Close", {
+            duration: 5000,
+          });
+        }
+      })
     );
-    this.csrfRequest.subscribe();
 
-    this.router.navigate(['/login']);
-    return logoutObservable;
+    return this.csrfRequest;
   }
 }

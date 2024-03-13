@@ -38,10 +38,3 @@ services:
 
   collector:
     container_name: stats.collector.development
-    environment:
-      DATABASE_NAME: "stats.db"
-      LOGFILE_NAME: "access.log"
-      UPDATE_INTERVAL: "60000"
-    volumes:
-     - ./collector/data:/data:rw
-     - ./proxy/logs:/logs:ro

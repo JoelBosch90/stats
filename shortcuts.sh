@@ -84,7 +84,7 @@ runDevelopment () {
 ################################################################################
 #
 #   build
-#       Function to recompile the API on the fly.
+#       Function to recompile the collector and the API on the fly.
 #
 ################################################################################
 build () {
@@ -94,6 +94,12 @@ build () {
 
   # Recompile the running container.
   ./mvnw compile;
+
+  # Visit the collector directory.
+  cd $WORKDIR/collector;
+
+  # Make the collector binaries.
+  make;
 }
 
 ################################################################################
