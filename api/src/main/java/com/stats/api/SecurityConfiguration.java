@@ -1,6 +1,9 @@
 package com.stats.api;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +19,9 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
-  private static final List<String> PUBLIC_ENDPOINTS = List.of("/login", "/logout", "/csrf");
+  private static final List<String> PUBLIC_ENDPOINTS = List.of("/login", "/logout");
+  private static final List<String> XSRF_EXCLUDED = Stream
+      .concat(PUBLIC_ENDPOINTS.stream(), List.of("/ws").stream()).collect(Collectors.toList());
 
   @Bean
   static public CsrfTokenRepository csrfTokenRepository() {
@@ -39,15 +44,13 @@ public class SecurityConfiguration {
   static public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     // Enable CSRF protection for all requests.
     http.csrf(csrf -> csrf
+        .ignoringRequestMatchers(XSRF_EXCLUDED.toArray(new String[0]))
         .csrfTokenRepository(SecurityConfiguration.csrfTokenRepository())
         .csrfTokenRequestHandler(SecurityConfiguration.csrfRequestAttributeHandler()));
 
     // Allow public endpoints to be accessed without authentication.
     http.authorizeHttpRequests(registry -> {
-      for (String endpoint : PUBLIC_ENDPOINTS) {
-        registry.requestMatchers(endpoint).permitAll();
-      }
-
+      registry.requestMatchers(PUBLIC_ENDPOINTS.toArray(new String[0])).permitAll();
       registry.anyRequest().authenticated();
     });
 

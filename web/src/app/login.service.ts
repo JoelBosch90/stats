@@ -16,42 +16,31 @@ interface Credentials {
   providedIn: 'root'
 })
 export class LoginService {
-  private csrfRequest: Observable<any>;
-  
   constructor(
     private http: HttpClient,
     private router: Router,
     private dataService: DataService,
     private snackBar: MatSnackBar,
-  ) {
-    this.csrfRequest = this.requestNewCsrfToken();
-    this.csrfRequest.subscribe();
-  }
+  ) {}
 
-  private requestNewCsrfToken() {
-    return this.http.get('/api/csrf');
-  }
 
   public login(credentials: Credentials) {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
   
-    return this.csrfRequest.pipe(
-      concatMap(() => this.http.post("/api/login", credentials, { headers, observe: 'response', responseType: 'text' })),
+    return this.http.post("/api/login", credentials, { headers, observe: 'response', responseType: 'text' }).pipe(
       tap({
-        next: () => this.dataService.set('loggedIn', true),
+        next: () => {
+          this.dataService.set('loggedIn', true).connect();
+        },
         error: () => this.dataService.set('loggedIn', false),
       })
     );
   }
 
   public logout() {
-    const logoutObservable = this.http.post("/api/logout", {});
-
-    // Logging out invalidates the CSRF token, so we need to request a new one.
-    this.csrfRequest = logoutObservable.pipe(
-      concatMap(() => this.requestNewCsrfToken()),
+    return this.http.post("/api/logout", {}).pipe(
       tap({
         next: () => {
           this.dataService.set('loggedIn', false);  
@@ -64,7 +53,5 @@ export class LoginService {
         }
       })
     );
-
-    return this.csrfRequest;
   }
 }

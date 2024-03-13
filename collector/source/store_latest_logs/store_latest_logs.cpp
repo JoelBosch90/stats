@@ -55,7 +55,8 @@ int store_latest_logs(string log_file_path, string database_path)
   int database_record_count = count_latest_database_records(last_record_time_stamp_minus_day, database);
 
   // The number of records that already exist in the database from the same
-  // timeframe are overlap. Thus, we can remove those to get the new records.
+  // timeframe are overlapping. Thus, we can remove those to get the new
+  // records.
   vector<access_record> new_records(log_records.begin() + database_record_count, log_records.end());
 
   if (store_records(new_records, database) == EXIT_SUCCESS)

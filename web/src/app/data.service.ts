@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 interface Data {
   loggedIn: boolean;
@@ -12,6 +13,7 @@ export class DataService {
   private static readonly DEFAULT_STORE : Data = {
     loggedIn: false
   };
+  private webSocket: WebSocketSubject<any> | null = null;
 
   constructor() {
     const localStore = localStorage.getItem('store');
@@ -21,7 +23,25 @@ export class DataService {
     } catch {
       this.store = DataService.DEFAULT_STORE;
     }
+    
+    if (this.get('loggedIn')) this.connect();
   }
+
+  public connect() {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = window.location.host;
+    const websocketURL = `${protocol}//${host}/api/ws`;
+    this.webSocket = webSocket(websocketURL);
+
+    this.webSocket.subscribe({
+      next: (message) => console.log(message),
+      error: (error) => console.log(error),
+      complete: () => console.log('complete'),
+    });
+
+    return this;
+  }
+
 
   public set<Key extends keyof Data>(key: Key, value: Data[Key]) : DataService {
     this.store[key] = value;

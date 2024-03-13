@@ -3,6 +3,8 @@ package com.stats.api;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +13,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DatabaseMonitor {
+  private static final Logger LOGGER = Logger.getLogger(DatabaseMonitor.class.getName());
   private final MessageService messageService;
   private final DataSource dataSource;
-  private int lastId = 0;
+  private AtomicLong lastProcessedId = new AtomicLong(0);
 
   @Autowired
   public DatabaseMonitor(MessageService messageService, DataSource dataSource) {
@@ -21,23 +24,43 @@ public class DatabaseMonitor {
     this.dataSource = dataSource;
   }
 
-  @Scheduled(fixedRate = 5000) // Check for new entries every 5 seconds
+  private String getNewAccessRecordsQuery(int lastProcessedId) {
+    String id_column = AccessRecord.ID_COLUMN;
+    String columns = String.join(", ", AccessRecord.COLUMNS);
+
+    return "SELECT " + columns
+        + " FROM " + AccessRecord.TABLE_NAME
+        + " WHERE " + id_column + " > " + lastProcessedId
+        + " ORDER BY " + id_column + " ASC";
+  }
+
+  private void processNewAccessRecord(ResultSet resultSet) {
+    AccessRecord record = new AccessRecord(resultSet);
+
+    messageService.sendMessageToTopic("new_record", record.toJSON());
+    lastProcessedId = new AtomicLong(record.getId());
+  }
+
+  private void processNewAccessRecords(ResultSet resultSet) throws SQLException {
+    if (resultSet == null) {
+      return;
+    }
+
+    while (resultSet.next()) {
+      processNewAccessRecord(resultSet);
+    }
+  }
+
+  @Scheduled(fixedRateString = "${UPDATE_INTERVAL:60000}")
   public void checkForNewEntries() {
-    try (Connection connection = dataSource.getConnection();
+    String query = getNewAccessRecordsQuery(lastProcessedId.intValue());
+    try (
+        Connection connection = dataSource.getConnection();
         Statement statement = connection.createStatement();
-        ResultSet resultSet = statement
-            .executeQuery("SELECT id, data FROM my_table WHERE id > " + lastId + " ORDER BY id")) {
-
-      while (resultSet.next()) {
-        int id = resultSet.getInt("id");
-        String data = resultSet.getString("data");
-
-        messageService.sendMessageToTopic("new_entries", data);
-
-        lastId = id;
-      }
-    } catch (SQLException e) {
-      // Handle exception
+        ResultSet resultSet = statement.executeQuery(query)) {
+      processNewAccessRecords(resultSet);
+    } catch (SQLException error) {
+      LOGGER.severe("An error occurred while checking for new access records: " + error.getMessage());
     }
   }
 }
