@@ -43,16 +43,11 @@ int store_latest_logs(string log_file_path, string database_path)
   // record.
   string last_record_time_stamp = get_last_record_time(database);
 
-  // However, it is kind of tricky to account for timezones with this. To avoid
-  // all timezone trouble, we can simply look up all records up to 1 day older
-  // than the latest record.
-  string last_record_time_stamp_minus_day = subtract_day_from_string(last_record_time_stamp);
-
   // Read all of the access log records that are added after this date.
-  vector<access_record> log_records = read_lines(file, last_record_time_stamp_minus_day, database);
+  vector<access_record> log_records = read_lines(file, last_record_time_stamp, database);
 
   // Get the number of records from the database that are added after this date.
-  int database_record_count = count_latest_database_records(last_record_time_stamp_minus_day, database);
+  int database_record_count = count_latest_database_records(last_record_time_stamp, database);
 
   // The number of records that already exist in the database from the same
   // timeframe are overlapping. Thus, we can remove those to get the new

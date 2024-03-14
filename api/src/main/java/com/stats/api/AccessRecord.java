@@ -4,14 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.lang.NonNull;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AccessRecord {
-  private static final Logger LOGGER = Logger.getLogger(DatabaseMonitor.class.getName());
   public static final String TABLE_NAME = "ACCESS_RECORDS";
 
   public static final String ID_COLUMN = "ID";
@@ -40,7 +38,6 @@ public class AccessRecord {
     try {
       return resultSet.getInt(columnName);
     } catch (SQLException exception) {
-      LOGGER.warning("Failed to get int result for column: " + columnName + " - " + exception.getMessage());
       return null;
     }
   }
@@ -49,7 +46,6 @@ public class AccessRecord {
     try {
       return resultSet.getString(columnName);
     } catch (SQLException exception) {
-      LOGGER.warning("Failed to get string result for column: " + columnName + " - " + exception.getMessage());
       return null;
     }
   }
