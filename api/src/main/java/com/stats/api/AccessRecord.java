@@ -4,13 +4,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.springframework.lang.NonNull;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AccessRecord {
+  private static final Logger LOGGER = Logger.getLogger(DatabaseMonitor.class.getName());
   public static final String TABLE_NAME = "ACCESS_RECORDS";
 
   public static final String ID_COLUMN = "ID";
@@ -24,7 +25,7 @@ public class AccessRecord {
   public static final List<String> COLUMNS = Stream.concat(INT_COLUMNS.stream(), STRING_COLUMNS.stream())
       .collect(Collectors.toList());
 
-  public HashMap<String, Object> properties;
+  public HashMap<String, Object> properties = new HashMap<>();
 
   public AccessRecord(ResultSet resultSet) {
     for (String int_column : INT_COLUMNS) {
@@ -39,6 +40,7 @@ public class AccessRecord {
     try {
       return resultSet.getInt(columnName);
     } catch (SQLException exception) {
+      LOGGER.warning("Failed to get int result for column: " + columnName + " - " + exception.getMessage());
       return null;
     }
   }
@@ -47,12 +49,15 @@ public class AccessRecord {
     try {
       return resultSet.getString(columnName);
     } catch (SQLException exception) {
+      LOGGER.warning("Failed to get string result for column: " + columnName + " - " + exception.getMessage());
       return null;
     }
   }
 
-  public int getId() {
-    return (int) properties.get(ID_COLUMN);
+  public Integer getId() {
+    Object id = properties.get(ID_COLUMN.toLowerCase());
+
+    return id == null ? null : (Integer) id;
   }
 
   @NonNull

@@ -36,6 +36,7 @@ services:
       SUPERUSER_PASSWORD: ${SUPERUSER_PASSWORD}
       DATABASE_NAME: ${DATABASE_NAME}
       UPDATE_INTERVAL: ${UPDATE_INTERVAL}
+      ORIGIN: ${ORIGIN}
     volumes:
      - ./collector/data:/data:rw
     networks:

@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.events.Event.ID;
 
 @Component
 public class DatabaseMonitor {
@@ -52,7 +53,8 @@ public class DatabaseMonitor {
   }
 
   @Scheduled(fixedRateString = "${UPDATE_INTERVAL:60000}")
-  public void checkForNewEntries() {
+  public void checkForNewAccessRecords() {
+    LOGGER.info("DATABASE_MONITOR: Checking for new access records...");
     String query = getNewAccessRecordsQuery(lastProcessedId.intValue());
     try (
         Connection connection = dataSource.getConnection();
@@ -60,7 +62,7 @@ public class DatabaseMonitor {
         ResultSet resultSet = statement.executeQuery(query)) {
       processNewAccessRecords(resultSet);
     } catch (SQLException error) {
-      LOGGER.severe("An error occurred while checking for new access records: " + error.getMessage());
+      LOGGER.severe("DATABASE_MONITOR: An error occurred while checking for new access records: " + error.getMessage());
     }
   }
 }
