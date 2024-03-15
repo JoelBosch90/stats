@@ -53,7 +53,8 @@ public class DatabaseMonitor {
   private void processNewAccessRecord(ResultSet resultSet) {
     AccessRecord record = new AccessRecord(resultSet);
 
-    messageService.sendMessageToTopic("new_record", record.toJSON());
+    LOGGER.info("DATABASE_MONITOR: Processing new access record: " + record.toJSON());
+    messageService.sendMessageToTopic("new_record", "test message");
     lastProcessedId = new AtomicLong(record.getId());
   }
 
