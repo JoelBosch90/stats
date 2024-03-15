@@ -32,7 +32,7 @@ public class DatabaseMonitor {
     this.dataSource = dataSource;
   }
 
-  private String getNewAccessRecordsQuery(int lastProcessedId) {
+  private String getNewAccessRecordsQuery(int lastIdToSkip) {
     String local_time = AccessRecord.LOCAL_TIME_COLUMN;
     String id = AccessRecord.ID_COLUMN;
 
@@ -46,25 +46,51 @@ public class DatabaseMonitor {
     return "SELECT " + columns
         + " FROM " + AccessRecord.TABLE_NAME
         + " WHERE " + local_time + " >= " + minute_ago
-        + " AND " + id + " > " + lastProcessedId
+        + " AND " + id + " > " + lastIdToSkip
         + " ORDER BY " + local_time + " ASC";
   }
 
-  private void processNewAccessRecord(ResultSet resultSet) {
+  private Integer processNewAccessRecord(ResultSet resultSet) {
     AccessRecord record = new AccessRecord(resultSet);
 
     LOGGER.info("DATABASE_MONITOR: Processing new access record: " + record.toJSON());
     messageService.sendMessageToTopic("new_record", "test message");
-    lastProcessedId = new AtomicLong(record.getId());
+
+    return record.getId();
   }
 
-  private void processNewAccessRecords(ResultSet resultSet) throws SQLException {
+  private Integer processNewAccessRecords(ResultSet resultSet) throws SQLException {
+    Integer highestId = null;
+
     if (resultSet == null) {
-      return;
+      return null;
     }
 
     while (resultSet.next()) {
-      processNewAccessRecord(resultSet);
+      Integer processedId = processNewAccessRecord(resultSet);
+
+      if (processedId == null || (highestId != null && processedId > highestId)) {
+        highestId = processedId;
+      }
+    }
+
+    return highestId;
+  }
+
+  // This is a threadsafe method to update the last processed ID.
+  private void updateLastProcessedId(Integer lastId) {
+    if (lastId == null) {
+      return;
+    }
+
+    long lastIdLong = lastId.longValue();
+
+    while (true) {
+      long currentLastProcessedId = lastProcessedId.get();
+
+      if (lastIdLong <= currentLastProcessedId || lastProcessedId.compareAndSet(currentLastProcessedId, lastIdLong)) {
+        break;
+      }
     }
   }
 
@@ -75,7 +101,11 @@ public class DatabaseMonitor {
         Connection connection = dataSource.getConnection();
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(query)) {
-      processNewAccessRecords(resultSet);
+      Integer lastId = processNewAccessRecords(resultSet);
+
+      // We need to be threadsafe in updating the last processed ID because this
+      // method is called by a scheduled task.
+      updateLastProcessedId(lastId);
     } catch (SQLException error) {
       LOGGER.severe("DATABASE_MONITOR: An error occurred while checking for new access records: " + error.getMessage());
     }
