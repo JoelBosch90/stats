@@ -70,14 +70,12 @@ public class DatabaseMonitor {
 
   @Scheduled(fixedRateString = FIXED_RATE)
   public void checkForNewAccessRecords() {
-    LOGGER.info("DATABASE_MONITOR: Checking for new access records...");
     String query = getNewAccessRecordsQuery(lastProcessedId.intValue());
     try (
         Connection connection = dataSource.getConnection();
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(query)) {
       processNewAccessRecords(resultSet);
-      LOGGER.info("DATABASE_MONITOR: Finished processing new access records...");
     } catch (SQLException error) {
       LOGGER.severe("DATABASE_MONITOR: An error occurred while checking for new access records: " + error.getMessage());
     }

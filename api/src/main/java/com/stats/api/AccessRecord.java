@@ -18,11 +18,15 @@ public class AccessRecord {
   public static final String ID_COLUMN = "ID";
   public static final String REMOTE_USER_COLUMN = "REMOTE_USER";
   public static final String REMOTE_ADDRESS_COLUMN = "REMOTE_ADDRESS";
+  public static final String HTTP_REQUEST_PATH = "HTTP_REQUEST_PATH";
+  public static final String HTTP_REQUEST_QUERY = "HTTP_REQUEST_QUERY";
+  public static final String HTTP_REQUEST_FRAGMENT = "HTTP_REQUEST_FRAGMENT";
   public static final String LOCAL_TIME_COLUMN = "LOCAL_TIME";
 
   private static final List<String> INT_COLUMNS = List.of(ID_COLUMN);
-  private static final List<String> HASH_COLUMNS = List.of(REMOTE_USER_COLUMN);
-  private static final List<String> STRING_COLUMNS = List.of(REMOTE_ADDRESS_COLUMN,
+  private static final List<String> HASH_COLUMNS = List.of(REMOTE_USER_COLUMN, REMOTE_ADDRESS_COLUMN);
+  private static final List<String> STRING_COLUMNS = List.of(HTTP_REQUEST_PATH, HTTP_REQUEST_QUERY,
+      HTTP_REQUEST_FRAGMENT,
       LOCAL_TIME_COLUMN);
   public static final List<String> COLUMNS = Stream
       .concat(Stream.concat(INT_COLUMNS.stream(), STRING_COLUMNS.stream()), HASH_COLUMNS.stream())
