@@ -39,6 +39,11 @@ services:
       ORIGIN: ${ORIGIN}
     volumes:
      - ./collector/data:/data:rw
+    healthcheck:
+      test: ["CMD", "curl", "-f", "${ORIGIN}"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
     networks:
       - proxied
 

@@ -43,7 +43,7 @@ export class LoginService {
     return this.http.post("/api/logout", {}).pipe(
       tap({
         next: () => {
-          this.dataService.set('loggedIn', false);  
+          this.dataService.set('loggedIn', false).disconnect();
           this.router.navigate(['/login']);
         },
         error: () => {

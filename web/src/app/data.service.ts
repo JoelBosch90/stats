@@ -27,7 +27,9 @@ export class DataService {
     if (this.get('loggedIn')) this.connect();
   }
 
-  public connect() {
+  public connect(retries = 3) {
+    if (this.webSocket) this.disconnect();
+
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const host = window.location.host;
     const websocketURL = `${protocol}//${host}/api/ws`;
@@ -35,13 +37,26 @@ export class DataService {
 
     this.webSocket.subscribe({
       next: (message) => console.log(message),
-      error: (error) => console.log(error),
+      error: (error) => {
+        if (retries) this.connect(retries - 1);
+        // It is likely that the session has expired, so we should log out.
+        else this.set('loggedIn', false);
+        console.log(error)
+      },
       complete: () => console.log('complete'),
     });
 
     return this;
   }
 
+  public disconnect() {
+    if (this.webSocket) {
+      this.webSocket.complete();
+      this.webSocket = null;
+    }
+
+    return this;
+  }
 
   public set<Key extends keyof Data>(key: Key, value: Data[Key]) : DataService {
     this.store[key] = value;

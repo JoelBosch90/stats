@@ -8,7 +8,6 @@ import org.springframework.lang.NonNull;
 
 @Service
 public class MessageService {
-
   private static final Logger LOGGER = Logger.getLogger(MessageService.class.getName());
   private final SimpMessagingTemplate template;
 
@@ -18,7 +17,10 @@ public class MessageService {
   }
 
   public void sendMessageToTopic(String topic, @NonNull Object message) {
-    LOGGER.info("Sending message to topic: " + topic + " - " + message.toString());
-    template.convertAndSend("/topic/" + topic, message);
+    try {
+      template.convertAndSend("/topic/" + topic, message);
+    } catch (Exception exception) {
+      LOGGER.warning("Failed to send message to topic: " + topic + " - " + exception.getMessage());
+    }
   }
 }
