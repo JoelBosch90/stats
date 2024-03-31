@@ -12,110 +12,108 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-// @Component
-// public class DatabaseMonitor {
-// private static final Logger LOGGER =
-// Logger.getLogger(DatabaseMonitor.class.getName());
-// private static final int INTERVAL_MARGIN_SECONDS = 3;
-// private static final String FIXED_RATE = "${UPDATE_INTERVAL:60000}";
-// private final MessageService messageService;
-// private final DataSource dataSource;
-// private AtomicLong lastProcessedId = new AtomicLong(0);
+@Component
+public class DatabaseMonitor {
+  private static final Logger LOGGER = Logger.getLogger(DatabaseMonitor.class.getName());
+  private static final int INTERVAL_MARGIN_SECONDS = 3;
+  private static final String FIXED_RATE = "${UPDATE_INTERVAL:60000}";
+  private final MessageHandler messageHandler;
+  private final DataSource dataSource;
+  private AtomicLong lastProcessedId = new AtomicLong(0);
 
-// // We'll try to get the update interval from the environment variables, but
-// // if we cannot, we'll default to 60000 milliseconds (1 minute).
-// @Value(FIXED_RATE)
-// private String updateInterval;
+  // We'll try to get the update interval from the environment variables, but
+  // if we cannot, we'll default to 60000 milliseconds (1 minute).
+  @Value(FIXED_RATE)
+  private String updateInterval;
 
-// @Autowired
-// public DatabaseMonitor(MessageService messageService, DataSource dataSource)
-// {
-// this.messageService = messageService;
-// this.dataSource = dataSource;
-// }
+  @Autowired
+  public DatabaseMonitor(MessageHandler messageHandler, DataSource dataSource) {
+    this.messageHandler = messageHandler;
+    this.dataSource = dataSource;
+  }
 
-// private String getNewAccessRecordsQuery(int lastIdToSkip) {
-// String local_time = AccessRecord.LOCAL_TIME_COLUMN;
-// String id = AccessRecord.ID_COLUMN;
+  private String getNewAccessRecordsQuery(int lastIdToSkip) {
+    String local_time = AccessRecord.LOCAL_TIME_COLUMN;
+    String id = AccessRecord.ID_COLUMN;
 
-// // We want to look back a little further than our update interval to ensure
-// // we don't miss any records.
-// String updateIntervalInSeconds =
-// String.valueOf((Integer.parseInt(updateInterval) / 1000) +
-// INTERVAL_MARGIN_SECONDS);
-// String minute_ago = "datetime('now', '-" + updateIntervalInSeconds + "
-// seconds')";
-// String columns = String.join(", ", AccessRecord.COLUMNS);
+    // We want to look back a little further than our update interval to ensure
+    // we don't miss any records.
+    String updateIntervalInSeconds = String
+        .valueOf((Integer.parseInt(updateInterval) / 1000) + INTERVAL_MARGIN_SECONDS);
+    String minute_ago = "datetime('now', '-" + updateIntervalInSeconds + " seconds')";
+    String columns = String.join(", ", AccessRecord.COLUMNS);
 
-// return "SELECT " + columns
-// + " FROM " + AccessRecord.TABLE_NAME
-// + " WHERE " + local_time + " >= " + minute_ago
-// + " AND " + id + " > " + lastIdToSkip
-// + " ORDER BY " + local_time + " ASC";
-// }
+    return "SELECT " + columns
+        + " FROM " + AccessRecord.TABLE_NAME
+        + " WHERE " + local_time + " >= " + minute_ago
+        + " AND " + id + " > " + lastIdToSkip
+        + " ORDER BY " + local_time + " ASC";
+  }
 
-// private Integer processNewAccessRecord(ResultSet resultSet) {
-// AccessRecord record = new AccessRecord(resultSet);
+  private Integer processNewAccessRecord(ResultSet resultSet) {
+    AccessRecord record = new AccessRecord(resultSet);
 
-// LOGGER.info("DATABASE_MONITOR: Processing new access record: " +
-// record.toJSON());
-// messageService.sendMessageToTopic("new_record", "test message");
+    LOGGER.info("DATABASE_MONITOR: Processing new access record: " + record.toJSON());
 
-// return record.getId();
-// }
+    try {
+      messageHandler.broadcast(record.toJSON());
+    } catch (Exception error) {
+      LOGGER.severe("DATABASE_MONITOR: An error occurred while broadcasting the message: " + error.getMessage());
+    }
 
-// private Integer processNewAccessRecords(ResultSet resultSet) throws
-// SQLException {
-// Integer highestId = null;
+    return record.getId();
+  }
 
-// if (resultSet == null) {
-// return null;
-// }
+  private Integer processNewAccessRecords(ResultSet resultSet) throws SQLException {
+    Integer highestId = null;
 
-// while (resultSet.next()) {
-// Integer processedId = processNewAccessRecord(resultSet);
+    if (resultSet == null) {
+      return null;
+    }
 
-// if (processedId == null || (highestId != null && processedId > highestId)) {
-// highestId = processedId;
-// }
-// }
+    while (resultSet.next()) {
+      Integer processedId = processNewAccessRecord(resultSet);
 
-// return highestId;
-// }
+      if (processedId == null || (highestId != null && processedId > highestId)) {
+        highestId = processedId;
+      }
+    }
 
-// // This is a threadsafe method to update the last processed ID.
-// private void updateLastProcessedId(Integer lastId) {
-// if (lastId == null) {
-// return;
-// }
+    return highestId;
+  }
 
-// long lastIdLong = lastId.longValue();
+  // This is a threadsafe method to update the last processed ID.
+  private void updateLastProcessedId(Integer lastId) {
+    if (lastId == null) {
+      return;
+    }
 
-// while (true) {
-// long currentLastProcessedId = lastProcessedId.get();
+    long lastIdLong = lastId.longValue();
 
-// if (lastIdLong <= currentLastProcessedId ||
-// lastProcessedId.compareAndSet(currentLastProcessedId, lastIdLong)) {
-// break;
-// }
-// }
-// }
+    while (true) {
+      long currentLastProcessedId = lastProcessedId.get();
 
-// @Scheduled(fixedRateString = FIXED_RATE)
-// public void checkForNewAccessRecords() {
-// String query = getNewAccessRecordsQuery(lastProcessedId.intValue());
-// try (
-// Connection connection = dataSource.getConnection();
-// Statement statement = connection.createStatement();
-// ResultSet resultSet = statement.executeQuery(query)) {
-// Integer lastId = processNewAccessRecords(resultSet);
+      if (lastIdLong <= currentLastProcessedId || lastProcessedId.compareAndSet(currentLastProcessedId, lastIdLong)) {
+        break;
+      }
+    }
+  }
 
-// // We need to be threadsafe in updating the last processed ID because this
-// // method is called by a scheduled task.
-// updateLastProcessedId(lastId);
-// } catch (SQLException error) {
-// LOGGER.severe("DATABASE_MONITOR: An error occurred while checking for new
-// access records: " + error.getMessage());
-// }
-// }
-// }
+  @Scheduled(fixedRateString = FIXED_RATE)
+  public void checkForNewAccessRecords() {
+    String query = getNewAccessRecordsQuery(lastProcessedId.intValue());
+
+    try (
+        Connection connection = dataSource.getConnection();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query)) {
+      Integer lastId = processNewAccessRecords(resultSet);
+
+      // We need to be threadsafe in updating the last processed ID because this
+      // method is called by a scheduled task.
+      updateLastProcessedId(lastId);
+    } catch (SQLException error) {
+      LOGGER.severe("DATABASE_MONITOR: An error occurred while checking for new access records: " + error.getMessage());
+    }
+  }
+}

@@ -2,6 +2,8 @@ package com.stats.api;
 
 import java.util.Map;
 import jakarta.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,22 +24,18 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
   @Value("${ORIGIN:}")
   public String currentOrigin;
 
-  // @Override
-  // public void configureMessageBroker(@NonNull MessageBrokerRegistry registry) {
-  // registry.setApplicationDestinationPrefixes("/app");
-  // registry.enableSimpleBroker("/topic");
-  // }
+  @Autowired
+  private MessageHandler messageHandler;
 
   @Override
-  public void registerWebSocketHandlers(@NonNull WebSocketHandlerRegistry registry) {
-    registry.addHandler(echoHandler(), "/ws")
-        .addInterceptors(httpSessionHandshakeInterceptor())
-        .setAllowedOrigins(currentOrigin);
-  }
-
-  @Bean
-  public @NonNull WebSocketHandler echoHandler() {
-    return new EchoHandler();
+  public void registerWebSocketHandlers(@NonNull WebSocketHandlerRegistry registry) throws IllegalStateException {
+    if (messageHandler != null) {
+      registry.addHandler(messageHandler, "/ws")
+          .addInterceptors(httpSessionHandshakeInterceptor())
+          .setAllowedOrigins(currentOrigin);
+    } else {
+      throw new IllegalStateException("MessageHandler is not available.");
+    }
   }
 
   @Bean
