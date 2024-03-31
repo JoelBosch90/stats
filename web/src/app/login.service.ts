@@ -32,9 +32,9 @@ export class LoginService {
     return this.http.post("/api/login", credentials, { headers, observe: 'response', responseType: 'text' }).pipe(
       tap({
         next: () => {
-          this.dataService.set('loggedIn', true).connect();
+          this.dataService.connect();
         },
-        error: () => this.dataService.set('loggedIn', false),
+        error: () => this.dataService.disconnect(),
       })
     );
   }
@@ -43,8 +43,7 @@ export class LoginService {
     return this.http.post("/api/logout", {}).pipe(
       tap({
         next: () => {
-          this.dataService.set('loggedIn', false).disconnect();
-          this.router.navigate(['/login']);
+          this.dataService.disconnect();
         },
         error: () => {
           this.snackBar.open("Server error: failed to log out.", "Close", {

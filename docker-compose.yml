@@ -15,7 +15,6 @@ services:
     volumes:
       - ./proxy/production.conf:/etc/nginx/nginx.conf
       - ./proxy/logs:/var/log/nginx
-
     # Make sure that all services that need to be proxied are running before we
     # start proxying.
     depends_on:

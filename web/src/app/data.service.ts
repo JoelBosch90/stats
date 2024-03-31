@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 interface Data {
@@ -15,7 +16,7 @@ export class DataService {
   };
   private webSocket: WebSocketSubject<any> | null = null;
 
-  constructor() {
+  constructor(private router: Router) {
     const localStore = localStorage.getItem('store');
 
     try {
@@ -27,8 +28,8 @@ export class DataService {
     if (this.get('loggedIn')) this.connect();
   }
 
-  public connect(retries = 3) {
-    if (this.webSocket) this.disconnect();
+  public connect(retries?: number) {
+    this.resetWebSocket();
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const host = window.location.host;
@@ -38,22 +39,37 @@ export class DataService {
     this.webSocket.subscribe({
       next: (message) => console.log(message),
       error: (error) => {
+        if (error.code === 1006) {
+          console.warn('Connection closed unexpectedly. Attempting to reconnect...');
+          this.connect(retries ?? 3);
+          return;
+        }
+
         if (retries) this.connect(retries - 1);
         // It is likely that the session has expired, so we should log out.
         else this.set('loggedIn', false);
-        console.log(error)
+        
+        console.error(error);
       },
-      complete: () => console.log('complete'),
+      complete: () => console.log('WebSocket connection closed.'),
     });
+    
+    // Send a message 3 seconds after connecting
+    setTimeout(() => {
+      if (this.webSocket) {
+        this.webSocket.next('Your message here');
+      }
+    }, 3000);
 
+    this.set('loggedIn', true);
+    
     return this;
   }
 
   public disconnect() {
-    if (this.webSocket) {
-      this.webSocket.complete();
-      this.webSocket = null;
-    }
+    this.resetWebSocket();
+    this.set('loggedIn', false);
+    this.router.navigate(['/login']);
 
     return this;
   }
@@ -67,5 +83,12 @@ export class DataService {
 
   public get<Key extends keyof Data>(key: Key) : Data[Key] {
     return this.store[key];
+  }
+
+  private resetWebSocket() {
+    if (this.webSocket) {
+      this.webSocket.complete();
+      this.webSocket = null;
+    }
   }
 }

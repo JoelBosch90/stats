@@ -3,7 +3,6 @@ package com.stats.api;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +20,9 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 @EnableWebSecurity
 public class SecurityConfiguration {
   private static final List<String> PUBLIC_ENDPOINTS = List.of("/login", "/logout");
+  private static final List<String> OTHER_XSRF_EXCLUDED = List.of("/ws");
   private static final List<String> XSRF_EXCLUDED = Stream
-      .concat(PUBLIC_ENDPOINTS.stream(), List.of("/ws").stream()).collect(Collectors.toList());
+      .concat(PUBLIC_ENDPOINTS.stream(), OTHER_XSRF_EXCLUDED.stream()).collect(Collectors.toList());
 
   @Bean
   static public CsrfTokenRepository csrfTokenRepository() {
