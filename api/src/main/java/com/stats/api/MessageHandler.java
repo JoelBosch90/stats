@@ -20,26 +20,39 @@ public class MessageHandler extends TextWebSocketHandler {
     LOGGER.info("Connection established: " + session.getId());
 
     sessions.put(session.getId(), session);
-    session.sendMessage(new TextMessage("{ \"message\": \"Hello!\" }"));
   }
 
   @Override
   public void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) {
-    LOGGER.info("Handling message: " + message.getPayload());
+    LOGGER.info("Received message: " + message.getPayload());
+    // send(session, message);
+  }
+
+  public void directMessage(@NonNull String sessionId, @NonNull String message) {
+    TextMessage textMessage = new TextMessage(message);
+    WebSocketSession session = sessions.get(sessionId);
+
+    send(session, textMessage);
+  }
+
+  public void broadcastMessage(@NonNull String message) {
+    TextMessage textMessage = new TextMessage(message);
+
+    for (WebSocketSession session : sessions.values()) {
+      send(session, textMessage);
+    }
+  }
+
+  private void send(WebSocketSession session, TextMessage message) {
+    // Check if the session is still open before sending the message.
+    if (message == null || session == null || !session.isOpen()) {
+      return;
+    }
+
     try {
       session.sendMessage(message);
     } catch (IOException exception) {
       LOGGER.severe("Failed to send message: " + exception.getMessage());
-    }
-  }
-
-  public void broadcast(@NonNull String message) throws IOException {
-    TextMessage textMessage = new TextMessage(message);
-
-    for (WebSocketSession session : sessions.values()) {
-      if (session.isOpen()) {
-        session.sendMessage(textMessage);
-      }
     }
   }
 }

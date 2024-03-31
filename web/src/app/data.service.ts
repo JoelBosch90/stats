@@ -2,8 +2,19 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
+interface AccessRecord {
+  http_request_fragment: string;
+  http_request_path: string;
+  http_request_query: string;
+  id: number;
+  local_time: string;
+  remote_address: string;
+  remote_user: string;
+}
+
 interface Data {
   loggedIn: boolean;
+  data: AccessRecord[];
 }
 
 @Injectable({
@@ -12,7 +23,8 @@ interface Data {
 export class DataService {
   private store : Data;
   private static readonly DEFAULT_STORE : Data = {
-    loggedIn: false
+    loggedIn: false,
+    data: [],
   };
   private webSocket: WebSocketSubject<any> | null = null;
 
@@ -37,7 +49,10 @@ export class DataService {
     this.webSocket = webSocket(websocketURL);
 
     this.webSocket.subscribe({
-      next: (message) => console.log(message),
+      next: (message: AccessRecord) => {
+        const data = this.get('data');
+        this.set('data', [...data, message]);
+      },
       error: (error) => {
         if (error.code === 1006) {
           console.warn('Connection closed unexpectedly. Attempting to reconnect...');
@@ -57,7 +72,10 @@ export class DataService {
     // Send a message 3 seconds after connecting
     setTimeout(() => {
       if (this.webSocket) {
-        this.webSocket.next('Your message here');
+        this.webSocket.next( {
+          type: 'catch-up',
+          start: null,
+        });
       }
     }, 3000);
 
@@ -82,7 +100,7 @@ export class DataService {
   }
 
   public get<Key extends keyof Data>(key: Key) : Data[Key] {
-    return this.store[key];
+    return this.store[key] ?? DataService.DEFAULT_STORE[key];
   }
 
   private resetWebSocket() {

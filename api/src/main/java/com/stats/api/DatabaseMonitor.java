@@ -56,7 +56,7 @@ public class DatabaseMonitor {
     LOGGER.info("DATABASE_MONITOR: Processing new access record: " + record.toJSON());
 
     try {
-      messageHandler.broadcast(record.toJSON());
+      messageHandler.broadcastMessage(record.toJSON());
     } catch (Exception error) {
       LOGGER.severe("DATABASE_MONITOR: An error occurred while broadcasting the message: " + error.getMessage());
     }
