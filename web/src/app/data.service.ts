@@ -14,7 +14,7 @@ interface AccessRecord {
 
 interface Data {
   loggedIn: boolean;
-  data: AccessRecord[];
+  data: Record<number, AccessRecord>;
 }
 
 @Injectable({
@@ -24,7 +24,7 @@ export class DataService {
   private store : Data;
   private static readonly DEFAULT_STORE : Data = {
     loggedIn: false,
-    data: [],
+    data: {},
   };
   private webSocket: WebSocketSubject<any> | null = null;
 
@@ -51,7 +51,8 @@ export class DataService {
     this.webSocket.subscribe({
       next: (message: AccessRecord) => {
         const data = this.get('data');
-        this.set('data', [...data, message]);
+
+        this.set('data', {...data, [message.id]: message });
       },
       error: (error) => {
         if (error.code === 1006) {

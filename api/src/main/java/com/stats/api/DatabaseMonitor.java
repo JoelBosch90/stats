@@ -53,12 +53,10 @@ public class DatabaseMonitor {
   private Integer processNewAccessRecord(ResultSet resultSet) {
     AccessRecord record = new AccessRecord(resultSet);
 
-    LOGGER.info("DATABASE_MONITOR: Processing new access record: " + record.toJSON());
-
     try {
       messageHandler.broadcastMessage(record.toJSON());
     } catch (Exception error) {
-      LOGGER.severe("DATABASE_MONITOR: An error occurred while broadcasting the message: " + error.getMessage());
+      LOGGER.severe("An error occurred while broadcasting the message: " + error.getMessage());
     }
 
     return record.getId();
@@ -113,7 +111,7 @@ public class DatabaseMonitor {
       // method is called by a scheduled task.
       updateLastProcessedId(lastId);
     } catch (SQLException error) {
-      LOGGER.severe("DATABASE_MONITOR: An error occurred while checking for new access records: " + error.getMessage());
+      LOGGER.severe("An error occurred while checking for new access records: " + error.getMessage());
     }
   }
 }
